@@ -1,10 +1,18 @@
-.PHONY: help start stop build clean test
+.PHONY: help start stop build clean test setup init-submodules
 
 help: ## Show this help message
 	@echo "Available commands:"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-start: ## Start the entire system (CrewAI + Playwright MCP)
+setup: init-submodules ## Initial setup (initialize submodules)
+	@echo "✅ Setup complete! You can now run 'make start'"
+
+init-submodules: ## Initialize git submodules
+	@echo "🔧 Initializing git submodules..."
+	git submodule update --init --recursive
+	@echo "✅ Submodules initialized"
+
+start: init-submodules ## Start the entire system (CrewAI + Playwright MCP)
 	docker-compose up --build
 
 stop: ## Stop all services

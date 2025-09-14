@@ -36,9 +36,10 @@ This system implements a **Backend Crew AI Agent** with multiple specialized age
 ## 🛠️ Technical Architecture
 
 ### Backend Abstraction
-- **Playwright MCP Integration**: Direct web automation for Calendly interaction
+- **Playwright MCP Integration**: Direct web automation for Calendly interaction using [Microsoft's official Playwright MCP server](https://github.com/microsoft/playwright-mcp)
 - **Modular Design**: Easy to swap backends (Calendly API ↔ Playwright MCP)
 - **Stable Data Contracts**: Consistent interfaces for slot and booking data
+- **Self-Contained**: Includes Playwright MCP server as a git submodule for complete portability
 
 ### Key Features
 - **Terminal Interface**: Clean CLI with special commands (`:help`, `:reset`, `:debug`)
@@ -50,32 +51,37 @@ This system implements a **Backend Crew AI Agent** with multiple specialized age
 
 ### Prerequisites
 - Docker and Docker Compose
+- Git (for submodule support)
 - OpenAI API key
-- Playwright MCP server (running locally)
+- Calendly account with a public booking link
 
 ### 1. Clone and Setup
 ```bash
 git clone <repository-url>
 cd mas-665-hw1
+
+# Initialize submodules (includes Playwright MCP server)
+make setup
 ```
 
 ### 2. Configure Environment
 ```bash
-cp env.example .env
+cp .env.example .env
 # Edit .env with your configuration:
 # - OPENAI_API_KEY=your_key_here
 # - CALENDLY_LINK=https://calendly.com/your-handle/30min
-# - MCP_SERVER_URL=http://localhost:3000
 ```
 
 ### 3. Start the System
 ```bash
-# Option 1: Using Make
+# Option 1: Using Make (recommended)
 make start
 
 # Option 2: Direct Docker Compose
 docker-compose up --build
 ```
+
+**Note**: The first run will take longer as it builds the Playwright MCP server Docker image.
 
 ### 4. Interact with the System
 ```bash
@@ -218,7 +224,14 @@ docker-compose exec crewai-app python -m pytest tests/test_agents.py
 # Check if MCP server is running
 curl http://localhost:3000/health
 
-# Verify MCP_SERVER_URL in .env
+# Verify submodules are initialized
+git submodule status
+
+# Re-initialize submodules if needed
+make setup
+
+# Check Docker logs
+docker-compose logs playwright-mcp
 ```
 
 **OpenAI API Errors**

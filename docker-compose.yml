@@ -1,19 +1,22 @@
 version: '3.8'
 
 services:
-  # Playwright MCP Server (you'll need to configure this based on your setup)
+  # Playwright MCP Server
   playwright-mcp:
-    image: playwright-mcp:latest  # Replace with your actual MCP server image
+    build:
+      context: ./playwright-mcp
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
     environment:
       - NODE_ENV=production
+      - PLAYWRIGHT_MCP_OUTPUT_DIR=/tmp/playwright-output
     networks:
       - crew-network
-    # Uncomment and modify based on your MCP server setup
-    # volumes:
-    #   - ./mcp-config:/app/config
-    # command: ["node", "server.js"]
+    volumes:
+      - playwright-output:/tmp/playwright-output
+    # Run in headless mode with HTTP transport for Docker
+    command: ["--headless", "--browser", "chromium", "--no-sandbox", "--port", "3000"]
 
   # CrewAI Application
   crewai-app:
@@ -37,3 +40,6 @@ services:
 networks:
   crew-network:
     driver: bridge
+
+volumes:
+  playwright-output:

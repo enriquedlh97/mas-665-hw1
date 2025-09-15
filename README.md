@@ -60,7 +60,7 @@ This system implements a **Backend Crew AI Agent** with multiple specialized age
 git clone <repository-url>
 cd mas-665-hw1
 
-# Initialize submodules (includes Playwright MCP server)
+# Complete initial setup (submodules + build)
 make setup
 ```
 
@@ -73,15 +73,41 @@ cp .env.example .env
 ```
 
 ### 3. Start the System
-```bash
-# Option 1: Using Make (recommended)
-make start
 
-# Option 2: Direct Docker Compose
-docker-compose up --build
+#### 🚀 **Daily Usage (Recommended)**
+```bash
+# Complete workflow: Build + Start + Chat
+make start-chat
 ```
 
-**Note**: The first run will take longer as it builds the Playwright MCP server Docker image.
+#### ⚡ **Fast Daily Usage (After Initial Build)**
+```bash
+# Quick start: Start + Chat (no rebuild)
+make quick-chat
+```
+
+#### 🔧 **Development Workflow**
+```bash
+# One-time setup (first time only)
+make setup
+
+# Daily usage (fast)
+make quick-chat
+
+# When you make code changes
+make build
+make quick-chat
+```
+
+#### 📋 **Step-by-Step Commands**
+```bash
+# Three-step process (if you prefer)
+make build    # Build images
+make start    # Start services in background
+make chat     # Open chat interface
+```
+
+**Note**: `make setup` builds everything once. After that, `make quick-chat` is fast (~10 seconds)!
 
 ### 4. Interact with the System
 ```bash
@@ -139,6 +165,50 @@ Enrique is an AI Studio student passionate about building intelligent systems...
 Would you like to schedule a meeting to learn more about Enrique's work and interests?
 ```
 
+### Natural Exit
+```
+You: That's all for today, thanks!
+Assistant: You're very welcome! It was great helping you today.
+
+Goodbye! Have a great day!
+👋 Exiting Enrique's Crew AI System...
+```
+
+Or even more subtle:
+```
+You: Ok that's everything I needed
+Assistant: Perfect! I'm glad I could help you with everything you needed.
+
+Goodbye! Have a great day!
+👋 Exiting Enrique's Crew AI System...
+```
+
+## 🛠️ Available Commands
+
+### Make Commands (Recommended)
+```bash
+make help        # Show all available commands
+make setup       # Complete initial setup (submodules + build)
+make start-chat  # Build + Start + Chat (complete workflow)
+make quick-chat  # Start + Chat (fast daily usage)
+make build       # Build Docker images (when code changes)
+make start       # Start services in background
+make chat        # Open chat interface (requires services running)
+make stop        # Stop all services
+make clean       # Clean up containers and images
+make logs        # Show service logs
+make test        # Run tests
+```
+
+### Workflow Comparison
+| Command | Time | Use Case |
+|---------|------|----------|
+| `make setup` | ~3 minutes | First-time setup only |
+| `make start-chat` | ~3 minutes | Complete workflow (build + start + chat) |
+| `make quick-chat` | ~10 seconds | Daily usage (fast!) |
+| `make build` | ~2 minutes | After code changes |
+| `make chat` | Instant | When services already running |
+
 ## 🔧 Configuration
 
 ### Environment Variables
@@ -156,6 +226,18 @@ Would you like to schedule a meeting to learn more about Enrique's work and inte
 - `:reset` - Clear conversation state
 - `:debug` - Show current conversation state
 - `:quit` - Exit the application
+
+### Natural Exit
+The agent intelligently recognizes when you want to end the conversation. You can express this in many ways:
+- "That's all for today, thanks"
+- "Thanks, I'm good"
+- "That's everything I needed"
+- "Ok that's all thanks"
+- "I'm done"
+- "Goodbye"
+- "See you later"
+
+The agent uses natural language understanding to detect your intent to end the conversation, even if you don't explicitly say "exit" or "goodbye".
 
 ## 🏗️ Project Structure
 
@@ -248,6 +330,21 @@ curl -H "Authorization: Bearer $OPENAI_API_KEY" https://api.openai.com/v1/models
 # Clean and rebuild
 make clean
 make build
+
+# Or complete reset
+make clean
+make setup
+```
+
+**Slow Startup Issues**
+```bash
+# Make sure you're using the fast commands
+make start-chat  # Fast (10 seconds)
+# NOT: docker-compose up --build  # Slow (3+ minutes)
+
+# If still slow, rebuild once
+make build
+make start-chat
 ```
 
 ## 📝 Assignment Requirements Checklist

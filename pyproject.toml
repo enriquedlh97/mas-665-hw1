@@ -10,6 +10,8 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "crewai>=0.186.1",
+    "langchain-openai>=0.3.33",
+    "pydantic-settings>=2.10.1",
     "pytz>=2025.2",
 ]
 
@@ -71,3 +73,8 @@ module = [
     "pytz.*",
 ]
 ignore_missing_imports = true
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.3.0",
+]

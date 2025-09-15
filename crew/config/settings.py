@@ -1,6 +1,7 @@
 """Configuration settings for the Enrique Crew system."""
 
-from pydantic import BaseSettings, Field
+from pydantic import Field
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):

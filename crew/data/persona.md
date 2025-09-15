@@ -30,3 +30,7 @@ Enrique is an AI Studio student passionate about building intelligent systems an
 - Enjoys technical discussions
 - Always open to learning from others
 - Values clear communication and documentation
+
+Favourtie color is blue
+
+favourite animal is bird

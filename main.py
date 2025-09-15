@@ -1,39 +1,59 @@
 """Main terminal interface for Enrique's Persona AI Agent."""
 
-import sys
+from crewai import Crew, Process
 
-from crewai import Crew, Process, Task
-
+from crew.agents.orchestrator_agent import create_orchestrator_agent
 from crew.agents.persona_agent import create_persona_agent
 from crew.config.settings import settings
+from crew.tasks.orchestrate_conversation import create_orchestrate_conversation_task
 
 
 class EnriqueCrewSystem:
     """
     Manages the CrewAI agents and tasks for Enrique's personal AI.
-    This system is designed to be modular and easily extendible.
+
+    This system uses an orchestrator-led architecture where the OrchestratorAgent
+    analyzes user intent and delegates tasks to appropriate specialist agents.
+    Currently active agents:
+    - PersonaAgent: Handles questions about Enrique's background and interests
+
+    The architecture is designed to be easily extensible for future specialist agents.
     """
 
     def __init__(self) -> None:
         """
         Initializes the system by creating the necessary agents.
-        Currently, only the Persona Agent is active to act as Enrique.
+
+        The orchestrator agent serves as the central router, while specialist
+        agents handle specific domains of functionality. Currently only the
+        PersonaAgent is active, but the architecture supports easy addition
+        of future specialist agents.
         """
-        # Create the primary agent
+        # Create active agents
+        self.orchestrator_agent = create_orchestrator_agent()
         self.persona_agent = create_persona_agent()
 
-        # Future agents can be initialized here when ready
-        # e.g., self.scheduler_agent = create_scheduler_agent()
+        # Future agents can be added here when ready
+        # self.scheduler_agent = create_scheduler_agent()
 
-        # Create the Crew with the active agents
+        # Create the Crew with active agents
         self.crew = self._create_crew()
 
     def _create_crew(self) -> Crew:
         """
-        Creates the CrewAI crew with all the active agents.
+        Creates the CrewAI crew with active agents in the orchestrator-led architecture.
+
+        The OrchestratorAgent is listed first as it serves as the primary entry point
+        for all user interactions. Additional specialist agents can be easily added
+        to this list when they become available.
         """
         return Crew(
-            agents=[self.persona_agent],  # Add other agents to this list later
+            agents=[
+                self.orchestrator_agent,  # Primary entry point for all requests
+                self.persona_agent,  # Handles persona-related questions
+                # Future specialist agents can be added here
+                # self.scheduler_agent,     # Handles scheduling and availability
+            ],
             tasks=[],
             process=Process.sequential,
             verbose=True,
@@ -42,30 +62,25 @@ class EnriqueCrewSystem:
 
     def process_user_input(self, user_input: str) -> str:
         """
-        Processes a user's message by creating and running a task for the persona agent.
-        """
-        if user_input.lower() in [":quit", "quit", "exit"]:
-            print("\n👋 Goodbye! Thanks for chatting.")
-            sys.exit(0)
+        Processes a user's message by creating an orchestration task.
 
-        # The task is explicitly defined for the persona agent to act as Enrique
-        persona_task = Task(
-            description=(
-                f"A user has sent you the following message: '{user_input}'.\n\n"
-                "You ARE Enrique, an AI Studio student. Your only goal is to respond to the user "
-                "as if you are Enrique himself. Use your knowledge base (accessed via your tools) to answer "
-                "questions about your background, skills, and interests. "
-                "Always speak in the first person ('I', 'me', 'my'). Maintain a friendly and personal tone."
-            ),
-            expected_output=(
-                "A conversational and personal response, written from the first-person perspective of Enrique, "
-                "that directly addresses the user's message."
-            ),
-            agent=self.persona_agent,
-        )
+        The OrchestratorAgent analyzes the user's intent and delegates to the
+        appropriate specialist agent based on the content of the message.
+
+        Args:
+            user_input: The user's message
+
+        Returns:
+            str: The response from the appropriate specialist agent
+        """
+        # Create orchestration task that will analyze intent and delegate appropriately
+        orchestration_task = create_orchestrate_conversation_task(user_input)
+
+        # Assign the task to the orchestrator agent
+        orchestration_task.agent = self.orchestrator_agent
 
         # Assign the task to the crew and kick it off
-        self.crew.tasks = [persona_task]
+        self.crew.tasks = [orchestration_task]
         result = self.crew.kickoff()
         return str(result)
 
@@ -75,7 +90,7 @@ def main() -> None:
     print("🤖 Acting as Enrique (AI Studio Persona)")
     print("========================================")
     print("You are now chatting with me, Enrique. Ask me anything!")
-    print("Type ':quit' or 'exit' to end the chat.")
+    print("Press Ctrl+C to exit the chat.")
     print("========================================")
 
     if not settings.openai_api_key:

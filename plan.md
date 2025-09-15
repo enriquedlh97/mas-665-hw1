@@ -1,44 +1,37 @@
-# Architectural Plan: Implementing an Orchestrator Agent
+# Architectural Plan: Optimizing Conversational Performance
 
-This document outlines the plan to refactor the CrewAI system to be more modular and scalable by introducing an Orchestrator Agent.
+This document outlines the plan to address the performance issues in the CrewAI system and align the implementation with best practices for conversational agents.
 
 ## Current State Analysis
 
-The current implementation in `main.py` directly handles user input and assigns tasks to the `PersonaAgent`. This approach is not scalable because it requires hard-coded logic to differentiate between various user intentions (e.g., asking a question vs. booking a meeting). As new functionalities are added, this central logic would become increasingly complex and difficult to maintain.
+The system was refactored from a multi-agent orchestrator pattern to a single `PersonaAgent` equipped with multiple tools. During this refactoring, a temporary solution was implemented to enable conversation memory by appending each new user query as a task to the crew's task list.
 
-## Proposed Architecture: The Orchestrator Pattern
+```python
+# The current, problematic implementation
+self.crew.tasks.append(enrique_task)
+result = self.crew.kickoff()
+```
 
-To address these limitations, we will adopt an Orchestrator pattern. A new, high-level **Orchestrator Agent** will be introduced to act as a router. Its sole responsibility will be to analyze the user's intent and delegate the task to the appropriate specialist agent.
+While this successfully creates a memory of the conversation, it introduces a significant performance bottleneck. The `crew.kickoff()` method is designed to run all tasks in its list from scratch. This means that with every new message, the crew re-processes the entire history of the conversation, leading to exponential increases in processing time, latency, and token usage.
 
-This architecture will consist of:
-1.  **Orchestrator Agent**: The new entry point for all user requests. It determines the user's goal and assigns the task to a specialist.
-2.  **Specialist Agents**:
-    *   **Persona Agent**: Handles all conversational queries about Enrique's background, skills, and interests.
-    *   **Scheduler Agent**: Manages all tasks related to scheduling meetings, such as checking availability and booking appointments via Calendly.
+## Proposed Solution: Adopt CrewAI's Native Memory Management
+
+To resolve the performance issue, we will refactor the task management system to follow the intended design pattern for conversational AI in `crewAI`. Instead of accumulating tasks, we will process only one task at a time and rely on the crew's built-in memory to provide conversational context.
+
+The `Crew` object is initialized with `memory=True`, which is the correct way to handle stateful conversations. We must leverage this feature properly.
 
 ## Implementation Plan
 
-### Step 1: Create the Orchestrator Agent
-- Create a new file: `crew/agents/orchestrator_agent.py`.
-- Define the `OrchestratorAgent` within this file.
-- This agent's `role` will be to analyze user intent. Its `goal` will be to delegate tasks to the correct specialist agent (`Persona` or `Scheduler`).
-- The `OrchestratorAgent` will not have any tools itself; its primary function is delegation.
-
-### Step 2: Modularize Tasks
-- Move the task definitions out of `main.py` and into dedicated files within the `crew/tasks/` directory.
-- **Orchestration Task (`crew/tasks/orchestrate_conversation.py`)**: A new high-level task that takes the user's raw input and is assigned to the `OrchestratorAgent`.
-- **Persona Task (`crew/tasks/answer_persona.py`)**: The existing task for answering questions as Enrique. This will be assigned by the `OrchestratorAgent` to the `PersonaAgent`.
-- **Scheduling Tasks (`crew/tasks/check_availability.py`, `crew/tasks/book_meeting.py`)**: New tasks for the scheduling flow, which will be assigned by the `OrchestratorAgent` to the `SchedulerAgent`.
-
-### Step 3: Refactor `main.py`
-- Modify the `EnriqueCrewSystem` class.
-- **Initialization**: In the `__init__` method, initialize all three agents: `OrchestratorAgent`, `PersonaAgent`, and `SchedulerAgent`.
-- **Crew Creation**: In the `_create_crew` method, include all three agents in the `agents` list. The `OrchestratorAgent` should be the first in the list, as it will be the entry point.
-- **Input Processing**: In the `process_user_input` method, remove the current logic that creates a `persona_task`. Instead, it will create a single `orchestration_task` from `crew/tasks/orchestrate_conversation.py` and assign it to the `OrchestratorAgent`.
+### Step 1: Refactor `main.py` Task Processing
+- Modify the `process_user_input` method in the `EnriqueCrewSystem` class.
+- **Remove Task Accumulation**: Change the line `self.crew.tasks.append(persona_task)` to `self.crew.tasks = [persona_task]`.
+- **Ensure Single Task Execution**: This change will ensure that `crew.kickoff()` only processes the single, most recent task from the user.
+- **Verify Memory**: Confirm that the `Crew` is initialized with `memory=True` so that the agent continues to have access to the conversation history.
 
 ## Benefits of This Approach
-- **Scalability**: New agents and functionalities can be added with minimal changes to the core application logic. We simply need to teach the Orchestrator about the new specialist.
-- **Maintainability**: The code becomes much cleaner and easier to understand, as each component has a single, well-defined responsibility.
-- **Alignment with CrewAI Philosophy**: This architecture fully embraces the multi-agent collaboration model that `crewAI` is designed for.
+- **Performance**: Drastically reduces latency and computational overhead. The processing time will remain constant with each turn instead of growing linearly with the conversation length.
+- **Efficiency**: Reduces redundant API calls and token consumption, leading to lower operational costs.
+- **Best Practices**: Aligns the implementation with the official `crewAI` documentation and intended usage for conversational agents.
+- **Stability**: Prevents potential errors like "maximum iterations reached" that can occur when the agent gets stuck in loops re-evaluating old tasks.
 
-This plan will establish a robust foundation for building a sophisticated and extensible AI assistant.
+This plan will result in a stable, performant, and cost-effective system that is correctly architected for stateful, turn-by-turn conversations.

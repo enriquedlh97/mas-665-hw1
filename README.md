@@ -1,51 +1,39 @@
 # Enrique Crew AI System
 
-A multi-agent CrewAI system that represents Enrique as an AI Studio student, capable of scheduling meetings, answering questions, and managing calendar availability through Calendly integration.
+A multi-agent CrewAI system that represents Enrique as an AI Studio student, capable of answering questions about his background and interests. Future capabilities will include scheduling meetings through Calendly.
 
 ## 🎯 Project Overview
 
-This system implements a **Backend Crew AI Agent** with multiple specialized agents that work together to:
+This system implements a **CrewAI agent** that acts as a digital persona for Enrique. The primary goal is to create a conversational experience where users can interact with Enrique's AI counterpart to learn about his skills, projects, and background, with a near-term goal of integrating automated scheduling.
 
-1. **Chat with users** and understand their intent
-2. **Check Enrique's Calendly availability** for requested dates/ranges
-3. **Book meetings** after collecting required information
-4. **Answer questions** about Enrique's background and interests
+The current architecture is centered around a single, highly capable **Persona Agent**.
 
-## 🤖 Agents
+## 🤖 Agent Architecture: Single Agent with Tools
 
-### 1. Chat Agent (Coordinator)
-- **Role**: First contact and conversation orchestrator
-- **Goal**: Understand user intent and delegate appropriate tasks
-- **Capabilities**: Intent detection, conversation flow management, task delegation
+We have adopted a simplified and robust architecture consisting of a single primary agent equipped with a suite of specialized tools. This approach centralizes the agent's logic and makes it easier to manage and extend.
 
-### 2. Availability Agent
-- **Role**: Calendar availability specialist
-- **Goal**: Check Enrique's Calendly for available time slots
-- **Capabilities**: Date range queries, alternative suggestions, slot formatting
+### **Persona Agent**
+- **Role**: Enrique's personal representative.
+- **Goal**: To act as Enrique, answer questions about his background, and manage conversation flow.
+- **Tools**:
+    - `PersonaReaderTool`: Accesses a knowledge base (`persona.md`) to answer questions about Enrique's background, skills, and interests.
+    - `CalendarCheckerTool`: Checks Enrique's calendar for availability (currently a placeholder).
+    - `MeetingBookerTool`: Books meetings on Enrique's calendar (currently a placeholder).
 
-### 3. Scheduler Agent
-- **Role**: Meeting booking specialist
-- **Goal**: Book meetings and provide confirmation details
-- **Capabilities**: Contact collection, booking processing, confirmation management
-
-### 4. Persona Agent
-- **Role**: Enrique's personal representative
-- **Goal**: Answer questions about Enrique's background and interests
-- **Capabilities**: Bio information, project details, availability policies
+This architecture allows the `PersonaAgent` to handle a wide variety of tasks by selecting the appropriate tool based on the user's intent.
 
 ## 🛠️ Technical Architecture
 
 ### Backend Abstraction
-- **Playwright MCP Integration**: Direct web automation for Calendly interaction using [Microsoft's official Playwright MCP server](https://github.com/microsoft/playwright-mcp)
-- **Modular Design**: Easy to swap backends (Calendly API ↔ Playwright MCP)
-- **Stable Data Contracts**: Consistent interfaces for slot and booking data
-- **Self-Contained**: Includes Playwright MCP server as a git submodule for complete portability
+- **Playwright MCP Integration**: Direct web automation for Calendly interaction using [Microsoft's official Playwright MCP server](https://github.com/microsoft/playwright-mcp). This is planned for future integration.
+- **Modular Design**: The system is designed to allow for easy swapping of backends (e.g., from a placeholder tool to a live Calendly API or Playwright).
+- **Self-Contained**: Includes the Playwright MCP server as a git submodule for complete portability.
 
 ### Key Features
-- **Terminal Interface**: Clean CLI with special commands (`:help`, `:reset`, `:debug`)
-- **Docker Environment**: Complete containerized setup with UV package management
-- **Environment Configuration**: Flexible settings via environment variables
-- **Error Handling**: Graceful fallbacks and user-friendly error messages
+- **Terminal Interface**: A clean command-line interface for interacting with the agent.
+- **Stateful Conversations**: The agent leverages CrewAI's memory to remember the context of the conversation.
+- **Docker Environment**: The entire system is containerized with Docker and uses UV for fast and reliable package management.
+- **Environment Configuration**: All settings, including API keys and model preferences, are managed through environment variables.
 
 ## 🚀 Quick Start
 

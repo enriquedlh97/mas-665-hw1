@@ -19,7 +19,7 @@ def create_orchestrator_agent() -> Agent:
         Agent: The configured orchestrator agent
     """
     llm = ChatOpenAI(
-        model="gpt-3.5-turbo",
+        model=settings.openai_model,
         temperature=0.3,  # Lower temperature for more consistent intent analysis
         api_key=settings.openai_api_key,
     )
@@ -39,7 +39,7 @@ def create_orchestrator_agent() -> Agent:
             "Currently, you primarily work with the PersonaAgent to handle questions "
             "about Enrique's background and interests."
         ),
-        verbose=True,
+        verbose=settings.verbose,
         allow_delegation=True,  # Critical: enables delegation to other agents
         llm=llm,
         tools=[],  # No tools - pure delegation role

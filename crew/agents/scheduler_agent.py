@@ -10,8 +10,8 @@ from ..tools import MeetingBookerTool
 def create_scheduler_agent() -> Agent:
     """Create the specialized scheduler agent."""
     llm = ChatOpenAI(
-        model="gpt-3.5-turbo",
-        temperature=0.2,
+        model=settings.openai_model,
+        temperature=0.2,  # Lower temperature for precise scheduling
         api_key=settings.openai_api_key,
     )
 
@@ -24,7 +24,7 @@ def create_scheduler_agent() -> Agent:
             "your role is to use the booking tool to finalize the appointment. "
             "You are precise, efficient, and ensure all confirmations are handled correctly."
         ),
-        verbose=True,
+        verbose=settings.verbose,
         allow_delegation=False,
         llm=llm,
         tools=[MeetingBookerTool()],

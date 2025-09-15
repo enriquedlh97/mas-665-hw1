@@ -32,6 +32,16 @@ class Settings(BaseSettings):
     openai_api_key: str | None = Field(
         default=None, env="OPENAI_API_KEY", description="OpenAI API key for LLM"
     )
+    openai_model: str = Field(
+        default="gpt-4o-mini",
+        env="OPENAI_MODEL",
+        description="OpenAI model to use for LLM",
+    )
+    openai_temperature: float = Field(
+        default=0.7,
+        env="OPENAI_TEMPERATURE",
+        description="Temperature for OpenAI model (0.0-2.0)",
+    )
 
     # Backend selection
     booking_backend: str = Field(
@@ -42,6 +52,14 @@ class Settings(BaseSettings):
 
     # Debug mode
     debug: bool = Field(default=False, env="DEBUG", description="Enable debug mode")
+
+    # CrewAI configuration
+    verbose: bool = Field(
+        default=True, env="VERBOSE", description="Enable verbose output from agents"
+    )
+    memory_enabled: bool = Field(
+        default=True, env="MEMORY_ENABLED", description="Enable conversation memory"
+    )
 
     class Config:
         env_file = ".env"

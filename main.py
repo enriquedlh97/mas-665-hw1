@@ -2,85 +2,83 @@
 
 from crewai import Crew, Process
 
-from crew.agents.orchestrator_agent import create_orchestrator_agent
 from crew.agents.persona_agent import create_persona_agent
 from crew.config.settings import settings
-from crew.tasks.orchestrate_conversation import create_orchestrate_conversation_task
 
 
 class EnriqueCrewSystem:
     """
-    Manages the CrewAI agents and tasks for Enrique's personal AI.
+    Manages Enrique's personal AI agent.
 
-    This system uses an orchestrator-led architecture where the OrchestratorAgent
-    analyzes user intent and delegates tasks to appropriate specialist agents.
-    Currently active agents:
-    - PersonaAgent: Handles questions about Enrique's background and interests
-
-    The architecture is designed to be easily extensible for future specialist agents.
+    This system uses a single PersonaAgent with multiple tools to handle all user
+    interactions. Enrique responds as himself and has access to tools for:
+    - Sharing his background and interests (PersonaReaderTool)
+    - Checking calendar availability (CalendarCheckerTool)
+    - Booking meetings (MeetingBookerTool)
     """
 
     def __init__(self) -> None:
         """
-        Initializes the system by creating the necessary agents.
+        Initializes the system by creating Enrique's persona agent.
 
-        The orchestrator agent serves as the central router, while specialist
-        agents handle specific domains of functionality. Currently only the
-        PersonaAgent is active, but the architecture supports easy addition
-        of future specialist agents.
+        Enrique has access to multiple tools to handle all user interactions
+        including questions about himself and scheduling requests.
         """
-        # Create active agents
-        self.orchestrator_agent = create_orchestrator_agent()
+        # Create Enrique's persona agent with all necessary tools
         self.persona_agent = create_persona_agent()
 
-        # Future agents can be added here when ready
-        # self.scheduler_agent = create_scheduler_agent()
-
-        # Create the Crew with active agents
+        # Create the Crew with Enrique's agent
         self.crew = self._create_crew()
 
     def _create_crew(self) -> Crew:
         """
-        Creates the CrewAI crew with active agents in the orchestrator-led architecture.
+        Creates the CrewAI crew with Enrique's persona agent.
 
-        The OrchestratorAgent is listed first as it serves as the primary entry point
-        for all user interactions. Additional specialist agents can be easily added
-        to this list when they become available.
+        Enrique handles all user interactions using his available tools.
         """
         return Crew(
-            agents=[
-                self.orchestrator_agent,  # Primary entry point for all requests
-                self.persona_agent,  # Handles persona-related questions
-                # Future specialist agents can be added here
-                # self.scheduler_agent,     # Handles scheduling and availability
-            ],
-            tasks=[],
+            agents=[self.persona_agent],  # Enrique handles everything
+            tasks=[],  # Tasks created dynamically
             process=Process.sequential,
-            verbose=True,
-            memory=True,
+            verbose=settings.verbose,
+            memory=settings.memory_enabled,
         )
 
     def process_user_input(self, user_input: str) -> str:
         """
-        Processes a user's message by creating an orchestration task.
+        Processes a user's message by creating a task for Enrique.
 
-        The OrchestratorAgent analyzes the user's intent and delegates to the
-        appropriate specialist agent based on the content of the message.
+        Enrique responds as himself using his available tools to handle
+        questions about himself or scheduling requests.
 
         Args:
             user_input: The user's message
 
         Returns:
-            str: The response from the appropriate specialist agent
+            str: Enrique's response
         """
-        # Create orchestration task that will analyze intent and delegate appropriately
-        orchestration_task = create_orchestrate_conversation_task(user_input)
+        from crewai import Task
 
-        # Assign the task to the orchestrator agent
-        orchestration_task.agent = self.orchestrator_agent
+        # Create a simple task for Enrique to handle
+        enrique_task = Task(
+            description=f"""Continue the conversation as Enrique Diaz de Leon Hicks.
 
-        # Assign the task to the crew and kick it off
-        self.crew.tasks = [orchestration_task]
+            The user just said: "{user_input}"
+
+            You are Enrique, an AI Studio student. Respond naturally and personally:
+            - Remember what we've discussed in this conversation
+            - Use your PersonaReaderTool to share details about your background when relevant
+            - If they ask about scheduling, use your calendar tools to help
+            - Always speak in first person as yourself (Enrique)
+            - Be conversational and remember the user's name if they've shared it
+
+            Continue this conversation naturally.""",
+            expected_output="A natural, contextual response from Enrique that shows conversation continuity",
+            agent=self.persona_agent,
+        )
+
+        # Add the task to the crew (preserves memory across interactions)
+        self.crew.tasks.append(enrique_task)
         result = self.crew.kickoff()
         return str(result)
 

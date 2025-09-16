@@ -2,7 +2,9 @@
 import sys
 import warnings
 
-from twin.crew import ConvoNewsletterCrew
+from crewai import Agent
+
+from twin.crew import TwinCrew
 from twin.custom_chat import run_custom_chat
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
@@ -29,7 +31,7 @@ def run():
     }
 
     try:
-        ConvoNewsletterCrew().crew().kickoff(inputs=inputs)
+        TwinCrew().crew().kickoff(inputs=inputs)
     except Exception as e:
         raise Exception(f"An error occurred while running the crew: {e}")
 
@@ -41,7 +43,7 @@ def train():
     # TODO: Revise after updates
     inputs = {"topic": "AI LLMs"}
     try:
-        ConvoNewsletterCrew().crew().train(
+        TwinCrew().crew().train(
             n_iterations=int(sys.argv[1]), filename=sys.argv[2], inputs=inputs
         )
 
@@ -55,7 +57,7 @@ def replay():
     """
     # TODO: Revise after updates
     try:
-        ConvoNewsletterCrew().crew().replay(task_id=sys.argv[1])
+        TwinCrew().crew().replay(task_id=sys.argv[1])
 
     except Exception as e:
         raise Exception(f"An error occurred while replaying the crew: {e}")
@@ -68,7 +70,7 @@ def test():
     # TODO: Revise after updates
     inputs = {"topic": "AI LLMs"}
     try:
-        ConvoNewsletterCrew().crew().test(
+        TwinCrew().crew().test(
             n_iterations=int(sys.argv[1]), openai_model_name=sys.argv[2], inputs=inputs
         )
 
@@ -81,9 +83,9 @@ def chat() -> None:
     Start interactive chat with Enrique, your AI newsletter strategy assistant.
     """
     try:
-        crew_instance = ConvoNewsletterCrew()
+        crew_instance: TwinCrew = TwinCrew()
         # Get the manager agent
-        manager_agent = crew_instance.newsletter_chat_manager()
+        manager_agent: Agent = crew_instance.chat_manager()
         
         run_custom_chat(crew_instance.crew(), manager_agent)
         

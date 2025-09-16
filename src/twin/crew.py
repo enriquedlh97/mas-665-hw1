@@ -1,3 +1,4 @@
+from typing import Final
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 
@@ -5,11 +6,11 @@ from twin.tools.word_counter_tool import WordCounterTool
 
 
 @CrewBase
-class ConvoNewsletterCrew:
-    """ConvoNewsletterCrew crew"""
+class TwinCrew:
+    """Twin crew"""
 
-    agents_config = "config/agents.yaml"
-    tasks_config = "config/tasks.yaml"
+    agents_config: Final[str] = "config/agents.yaml"
+    tasks_config: Final[str] = "config/tasks.yaml"
 
     @agent
     def synthesizer(self) -> Agent:
@@ -32,9 +33,9 @@ class ConvoNewsletterCrew:
         )
 
     @agent
-    def newsletter_chat_manager(self) -> Agent:
+    def chat_manager(self) -> Agent:
         return Agent(
-            config=self.agents_config["newsletter_chat_manager"],
+            config=self.agents_config["chat_manager"],
             verbose=True,
             allow_delegation=True,
         )
@@ -61,7 +62,7 @@ class ConvoNewsletterCrew:
 
     @crew
     def crew(self) -> Crew:
-        """Creates the ConvoNewsletterCrew crew"""
+        """Creates the Twin crew"""
 
         return Crew(
             agents=self.agents,

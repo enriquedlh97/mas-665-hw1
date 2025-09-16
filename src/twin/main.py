@@ -17,6 +17,7 @@ def run():
     """
     Run the crew.
     """
+    # TODO: Revise after updates
     inputs = {
         "brain_dump": """
             I would like to write a newsletter around "why is it feels so hard to get a new AI software job or land AI clients". 
@@ -37,6 +38,7 @@ def train():
     """
     Train the crew for a given number of iterations.
     """
+    # TODO: Revise after updates
     inputs = {"topic": "AI LLMs"}
     try:
         ConvoNewsletterCrew().crew().train(
@@ -51,6 +53,7 @@ def replay():
     """
     Replay the crew execution from a specific task.
     """
+    # TODO: Revise after updates
     try:
         ConvoNewsletterCrew().crew().replay(task_id=sys.argv[1])
 
@@ -62,6 +65,7 @@ def test():
     """
     Test the crew execution and returns the results.
     """
+    # TODO: Revise after updates
     inputs = {"topic": "AI LLMs"}
     try:
         ConvoNewsletterCrew().crew().test(
@@ -72,7 +76,7 @@ def test():
         raise Exception(f"An error occurred while testing the crew: {e}")
 
 
-def chat():
+def chat() -> None:
     """
     Start interactive chat with Enrique, your AI newsletter strategy assistant.
     """

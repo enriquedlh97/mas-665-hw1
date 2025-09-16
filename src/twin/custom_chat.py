@@ -6,31 +6,32 @@ import time
 from typing import Any, Dict, List, Optional
 
 import click
+from crewai import Agent, Crew
 from crewai.llm import LLM
 from crewai.utilities.llm_utils import create_llm
 
 
-def run_custom_chat(crew_instance, manager_agent):
+def run_custom_chat(crew_instance: Crew, manager_agent: Agent) -> None:
     """
     Runs an interactive chat using your custom manager agent as the assistant.
     Replicates the CrewAI chat interface but with your personalized agent.
     """
     # Initialize the manager agent's LLM
-    chat_llm = initialize_manager_llm(manager_agent)
+    chat_llm: LLM | None = initialize_manager_llm(manager_agent)
     if not chat_llm:
         return
 
     click.secho(
-        "\nInitializing your newsletter assistant - Enrique is getting ready to help you create amazing content!",
+        "\nInitializing chat - Enrique is getting ready to talk to you!",
         fg="cyan",
     )
 
     # Build system message from manager agent's configuration  
-    system_message = build_manager_system_message(manager_agent)
+    system_message: str = build_manager_system_message(manager_agent)
     
     # Generate introductory message
     try:
-        introductory_message = chat_llm.call(
+        introductory_message: str = chat_llm.call(
             messages=[{"role": "system", "content": system_message}]
         )
     except Exception as e:
@@ -39,36 +40,36 @@ def run_custom_chat(crew_instance, manager_agent):
 
     click.secho(f"\nEnrique: {introductory_message}\n", fg="green")
 
-    messages = [
+    messages: list[dict[str, str]] = [
         {"role": "system", "content": system_message},
         {"role": "assistant", "content": introductory_message},
     ]
 
     # Available functions for the manager
-    available_functions = {
+    available_functions: dict[str, Any] = {
         "create_newsletter": create_newsletter_function(crew_instance, messages),
         "provide_newsletter_advice": create_advice_function(manager_agent),
     }
 
     # Tool schemas for the manager
-    tool_schemas = build_manager_tool_schemas()
+    tool_schemas: list[dict[str, Any]] = build_manager_tool_schemas()
 
     # Start the chat loop
     chat_loop(chat_llm, messages, tool_schemas, available_functions)
 
 
-def initialize_manager_llm(manager_agent) -> Optional[LLM]:
+def initialize_manager_llm(manager_agent: Agent) -> Optional[LLM]:
     """Initialize LLM for the manager agent."""
     try:
         # Use the same LLM as the manager agent or default to gpt-4o
-        llm_config = getattr(manager_agent, "llm", "gpt-4o")
+        llm_config: LLM = getattr(manager_agent, "llm", "gpt-4o")
         return create_llm(llm_config)
     except Exception as e:
         click.secho(f"Unable to initialize manager LLM: {e}", fg="red")
         return None
 
 
-def build_manager_system_message(manager_agent) -> str:
+def build_manager_system_message(manager_agent: Agent) -> str:
     """Builds system message from the manager agent's configuration."""
     return f"""You are {manager_agent.role}.
 
@@ -84,13 +85,13 @@ IMPORTANT INSTRUCTIONS:
 - Always stay in character as Enrique Diaz de Leon Hicks
 - Be conversational, friendly, and draw on your Harvard/MIT background when relevant
 - Ask clarifying questions to understand the user's goals and audience
-- Provide strategic insights about AI developer content and market positioning
 - When the user has a solid newsletter concept or brain dump, offer to create the full newsletter
 - Focus on actionable advice and building authority in the AI space
-- Remember you're helping with content for AI Developer Weekly and the RadicalWorks.ai brand"""
+- Remember you're helping with content for AI Developer Weekly and the RadicalWorks.ai brand
+"""
 
 
-def build_manager_tool_schemas() -> List[Dict[str, Any]]:
+def build_manager_tool_schemas() -> list[dict[str, Any]]:
     """Build the tool schemas for the manager agent."""
     return [
         {
@@ -158,14 +159,14 @@ def create_advice_function(manager_agent):
     return provide_advice
 
 
-def chat_loop(chat_llm, messages, tool_schemas, available_functions):
+def chat_loop(chat_llm: LLM, messages: list[dict[str, str]], tool_schemas: list[dict[str, Any]], available_functions: dict[str, Any]) -> None:
     """Main chat loop for interacting with the user."""
     while True:
         try:
             # Flush any pending input before accepting new input
             flush_input()
 
-            user_input = get_user_input()
+            user_input: str = get_user_input()
             handle_user_input(
                 user_input, chat_llm, messages, tool_schemas, available_functions
             )
@@ -184,9 +185,9 @@ def get_user_input() -> str:
         "\nYou (type your message below. Press 'Enter' twice when you're done, or type 'exit' to quit):",
         fg="blue",
     )
-    user_input_lines = []
+    user_input_lines: list[str] = []
     while True:
-        line = input()
+        line: str = input()
         if line.strip().lower() == "exit":
             return "exit"
         if line == "":

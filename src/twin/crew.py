@@ -13,6 +13,14 @@ class TwinCrew:
     tasks_config: Final[str] = "config/tasks.yaml"
 
     @agent
+    def chat_manager(self) -> Agent:
+        return Agent(
+            config=self.agents_config["chat_manager"],
+            verbose=True,
+            allow_delegation=True,
+        )
+
+    @agent
     def synthesizer(self) -> Agent:
         return Agent(config=self.agents_config["synthesizer"], verbose=True)
 
@@ -30,14 +38,6 @@ class TwinCrew:
             config=self.agents_config["newsletter_editor"],
             tools=[WordCounterTool()],
             verbose=True,
-        )
-
-    @agent
-    def chat_manager(self) -> Agent:
-        return Agent(
-            config=self.agents_config["chat_manager"],
-            verbose=True,
-            allow_delegation=True,
         )
 
     @task
@@ -63,9 +63,10 @@ class TwinCrew:
     @crew
     def crew(self) -> Crew:
         """Creates the Twin crew"""
+        worker_agents: list[Agent] = [self.synthesizer(), self.newsletter_writer(), self.newsletter_editor()]
 
         return Crew(
-            agents=self.agents,
+            agents=worker_agents,
             tasks=self.tasks,
             process=Process.sequential,
             verbose=True,

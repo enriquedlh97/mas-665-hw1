@@ -15,8 +15,16 @@ dependencies = [
     "pytz>=2025.2",
 ]
 
+[project.scripts]
+twin = "twin.main:run"
+run_crew = "twin.main:run"
+train = "twin.main:train"
+replay = "twin.main:replay"
+test = "twin.main:test"
+chat = "twin.main:chat"
+
 [tool.hatch.build.targets.wheel]
-packages = ["crew"]
+packages = ["src/twin"]
 
 [project.optional-dependencies]
 dev = [

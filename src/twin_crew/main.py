@@ -4,8 +4,9 @@ import warnings
 
 from crewai import Agent
 
-from twin.crew import TwinCrew
-from twin.custom_chat import run_custom_chat
+from twin_crew.crew import TwinCrew
+from twin_crew.custom_chat import run_custom_chat
+from twin_crew.named_agent import NamedAgent
 
 warnings.filterwarnings("ignore", category=SyntaxWarning, module="pysbd")
 
@@ -85,7 +86,7 @@ def chat() -> None:
     try:
         crew_instance: TwinCrew = TwinCrew()
         # Get the manager agent
-        manager_agent: Agent = crew_instance.chat_manager()
+        manager_agent: NamedAgent = crew_instance.chat_manager()
         
         run_custom_chat(crew_instance.crew(), manager_agent)
         

@@ -48,7 +48,7 @@ write_newsletter_task:
   description: >
     Using the subject line and outline provided by the Synthesizer, create a complete 
     newsletter draft for AI Developer Weekly. 
-    Make sure the newsletter is between 1,000 and 1,200 words.
+    Make sure the newsletter is between 500 and 1,000 words.
     Ensure the newsletter aligns with the following context:
 
     **Target Audience**: 
@@ -99,7 +99,7 @@ review_newsletter_task:
   description: >
     Review the complete newsletter draft created by the Newsletter Writer. Ensure 
     the content is polished, engaging, and meets the goals of AI Developer Weekly. 
-    Make sure the newsletter is between 1,000 and 1,200 words.
+    Make sure the newsletter is between 500 and 1,000 words.
     Incorporate the following context to guide the review process:
 
     **Target Audience**: 

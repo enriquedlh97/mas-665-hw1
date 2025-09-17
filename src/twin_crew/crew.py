@@ -70,6 +70,7 @@ class TwinCrew:
 
         return Crew(
             agents=worker_agents,
+            # self.agents,
             tasks=self.tasks,
             process=Process.sequential,
             verbose=False,

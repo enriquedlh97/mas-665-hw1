@@ -106,9 +106,8 @@ def build_system_message(chat_inputs: ChatInputs, manager_agent: Optional[NamedA
             "You assist users with this crew's purpose. "
             "You have a single function (tool) you can call by name once you have all required inputs. "
             f"Those required inputs are: {required_fields_str}. "
-            "Before calling any function, first reply by indicating to the user that you will call the function, and ask the user to confirm if that is fine. "
-            "Only after the user confirm can you call the function."
-            "After the function returns output, begin your next assistant message with exactly: Here is the result from the crew: "
+            "Before calling any function, first reply by indicating to the user that you will call the function (crew, crew function or however you want to call it), "
+            "and ask the user to confirm if that is fine. Only after the user confirm can you call the function."
             "Keep responses concise and friendly. If the user drifts off-topic, provide a brief answer and guide them back to the crew's purpose.\n"
             f"Crew Name: {chat_inputs.crew_name}\n"
             f"Crew Description: {chat_inputs.crew_description}"
@@ -120,9 +119,8 @@ def build_system_message(chat_inputs: ChatInputs, manager_agent: Optional[NamedA
         "You can answer general questions, but should guide users back to the crew's purpose afterward. "
         "You have a single function (tool) you can call by name once you have all required inputs. "
         f"Those required inputs are: {required_fields_str}. "
-        "Before calling any function, first reply by indicating to the user that you will call the function, and ask the user to confirm if that is fine. "
-        "Only after the user confirm can you call the function."
-        "After the function returns output, begin your next assistant message with exactly: Here is the result from the crew: "
+        "Before calling any function, first reply by indicating to the user that you will call the function (crew, crew function or however you want to call it), "
+        "and ask the user to confirm if that is fine. Only after the user confirm can you call the function."
         "When you have them, call the function. Keep responses concise and friendly. "
         "If a user asks a question outside the crew's scope, provide a brief answer and remind them of the crew's purpose.\n"
         f"Crew Name: {chat_inputs.crew_name}\n"
@@ -147,8 +145,8 @@ def create_tool_function(crew: Crew, messages: List[Dict[str, str]]) -> Any:
             "role": "system",
             "content": f"[state] Crew '{crew.__class__.__name__}' was called successfully at {run_time}."
         })
-        # Visible prefix so both user and model recognize tool output
-        return "Here is the result from the crew:\n\n" + result_str
+        # Return raw result string; the assistant will acknowledge then display this content
+        return result_str
     return run_with_messages
 
 
@@ -234,6 +232,23 @@ def handle_user_input(
         tools=[crew_tool_schema],
         available_functions=available_functions,
     )
+
+    # If a tool was just called (tool wrapper appends a state note), ask the model to write an acknowledgement message
+    if any(
+        msg.get("role") == "system"
+        and isinstance(msg.get("content"), str)
+        and msg["content"].startswith("[state] Crew ")
+        and "was called successfully" in msg["content"]
+        for msg in messages[::-1]
+    ):
+        acknowledgement_prompt = (
+            "Write a single-sentence acknowledgement that you just received the crew's output "
+            "and that the next message will be the result from the crew. Do not include the result itself."
+        )
+        acknowledgement_response = chat_llm.call(messages=messages + [{"role": "user", "content": acknowledgement_prompt}])
+        messages.append({"role": "assistant", "content": acknowledgement_response})
+        click.secho(f"\n{speaker_label}: {acknowledgement_response}\n", fg="green")
+        messages.append({"role": "system", "content": ""})
 
     messages.append({"role": "assistant", "content": final_response})
     click.secho(f"\n{speaker_label}: {final_response}\n", fg="green")

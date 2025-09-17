@@ -1,374 +1,106 @@
-# Enrique Crew AI System
+# Enrique Crew AI - Twin Agent System
 
-A multi-agent CrewAI system that represents Enrique as an AI Studio student, capable of answering questions about his background and interests. Future capabilities will include scheduling meetings through Calendly.
+A sophisticated, persona-driven AI chat system built on `crewAI`. This project provides a generic and extensible framework for creating conversational agents that can intelligently execute complex tasks by leveraging a `crew` as a callable tool.
 
 ## 🎯 Project Overview
 
-This system implements a **CrewAI agent** that acts as a digital persona for Enrique. The primary goal is to create a conversational experience where users can interact with Enrique's AI counterpart to learn about his skills, projects, and background, with a near-term goal of integrating automated scheduling.
+This system has been refactored into a flexible chat application that dynamically builds its capabilities around a configured `crewAI` crew. Instead of a hard-coded multi-agent setup, it now exposes an entire crew as a single, powerful tool to a chat manager agent.
 
-The current architecture is centered around a single, highly capable **Persona Agent**.
+The core of the application is a custom chat orchestrator that:
+1.  **Represents a Persona**: The chat is managed by a "manager" agent (e.g., "Enrique"), who drives the conversation's tone and personality.
+2.  **Exposes a Crew as a Tool**: It dynamically discovers the inputs required by a `crew` and presents the entire crew's capability as a single function call to the chat LLM.
+3.  **Manages Conversation Flow**: It handles user confirmation before executing the crew, provides clear status updates, and uses hidden state messages to ensure the LLM reliably remembers when tasks have been run.
 
-## 🤖 Agent Architecture: Single Agent with Tools
+This architecture allows for a clean separation between the conversational interface and the task-execution backbone, making the system both highly capable and easy to maintain.
 
-We have adopted a simplified and robust architecture consisting of a single primary agent equipped with a suite of specialized tools. This approach centralizes the agent's logic and makes it easier to manage and extend.
+## 🤖 Architecture: A Chat Manager with a Crew Tool
 
-### **Persona Agent**
-- **Role**: Enrique's personal representative.
-- **Goal**: To act as Enrique, answer questions about his background, and manage conversation flow.
-- **Tools**:
-    - `PersonaReaderTool`: Accesses a knowledge base (`persona.md`) to answer questions about Enrique's background, skills, and interests.
-    - `CalendarCheckerTool`: Checks Enrique's calendar for availability (currently a placeholder).
-    - `MeetingBookerTool`: Books meetings on Enrique's calendar (currently a placeholder).
+The current architecture is designed for clarity, reliability, and flexibility.
 
-This architecture allows the `PersonaAgent` to handle a wide variety of tasks by selecting the appropriate tool based on the user's intent.
+1.  **Chat Manager Agent (`NamedAgent`)**: The user interacts with a persona-driven agent defined in `src/twin_crew/config/agents.yaml`. This agent's `name`, `role`, and `backstory` are used to craft the system prompt and drive the user experience.
 
-## 🛠️ Technical Architecture
+2.  **The Crew as a Single Tool**: The entire `TwinCrew` (defined in `src/twin_crew/crew.py`) is exposed to the Chat Manager as its only tool. The chat orchestrator automatically determines the inputs the crew needs (`crew.inputs`) and builds a tool schema on the fly.
 
-### Backend Abstraction
-- **Playwright MCP Integration**: Direct web automation for Calendly interaction using [Microsoft's official Playwright MCP server](https://github.com/microsoft/playwright-mcp). This is planned for future integration.
-- **Modular Design**: The system is designed to allow for easy swapping of backends (e.g., from a placeholder tool to a live Calendly API or Playwright).
-- **Self-Contained**: Includes the Playwright MCP server as a git submodule for complete portability.
+3.  **Custom Chat Orchestrator (`custom_chat.py`)**: This is the heart of the application. It manages the entire conversation lifecycle:
+    *   It builds a persona-aware system prompt.
+    *   It asks for user confirmation before calling the `crew` tool.
+    *   It injects hidden `[state]` messages into the conversation history to let the LLM know a tool call is about to happen and when it has completed.
+    *   It generates a polite, model-generated acknowledgment after the tool runs, before showing the final result.
 
-### Key Features
-- **Terminal Interface**: A clean command-line interface for interacting with the agent.
-- **Stateful Conversations**: The agent leverages CrewAI's memory to remember the context of the conversation.
-- **Docker Environment**: The entire system is containerized with Docker and uses UV for fast and reliable package management.
-- **Environment Configuration**: All settings, including API keys and model preferences, are managed through environment variables.
+This design makes the system incredibly flexible. You can add or remove agents, tasks, and tools to the `TwinCrew`, and the chat interface will adapt without requiring any code changes.
+
+### Runtime Flow
+1.  The chat starts, building the Chat Manager agent from YAML configuration.
+2.  The system inspects the `TwinCrew` to determine its required inputs (e.g., `topic`, `question`).
+3.  A dynamic tool schema is created for the `TwinCrew` function.
+4.  The user interacts with the Chat Manager.
+5.  If the user's request requires the `TwinCrew`, the manager will ask for confirmation.
+6.  Upon confirmation, the `crew.kickoff()` method is executed with the necessary inputs.
+7.  The result is returned to the user in a clean, human-readable format.
 
 ## 🚀 Quick Start
 
-### Prerequisites
-- Docker and Docker Compose
-- Git (for submodule support)
-- OpenAI API key
-- Calendly account with a public booking link
+This project no longer uses Docker or Makefiles. It is now a standard Python project managed with `hatch` and `uv` (or `pip`).
 
-### 1. Clone and Setup
+### 1. Prerequisites
+- Python 3.11+
+- An OpenAI API key
+
+### 2. Installation
+Clone the repository and install the dependencies.
+
 ```bash
 git clone <repository-url>
 cd mas-665-hw1
 
-# Complete initial setup (submodules + build)
-make setup
+# It is recommended to use a virtual environment
+python -m venv .venv
+source .venv/bin/activate
+
+# Install dependencies
+pip install -e .
 ```
 
-### 2. Configure Environment
+### 3. Configuration
+The agent's persona and the crew's tasks are configured via YAML files.
+
+-   **Agent Persona**: Modify `src/twin_crew/config/agents.yaml` to define the Chat Manager's name, role, backstory, and goals.
+-   **Crew Tasks**: Modify `src/twin_crew/config/tasks.yaml` to define the tasks that the crew will execute.
+
+You will also need to set your OpenAI API key as an environment variable:
 ```bash
-cp .env.example .env
-# Edit .env with your configuration:
-# - OPENAI_API_KEY=your_key_here
-# - CALENDLY_LINK=https://calendly.com/your-handle/30min
+export OPENAI_API_KEY="your_key_here"
 ```
 
-### 3. Start the System
+### 4. Running the Chat
+The project uses `pyproject.toml` to define convenient scripts. To start the chat interface, run:
 
-#### 🚀 **Daily Usage (Recommended)**
 ```bash
-# Complete workflow: Build + Start + Chat
-make start-chat
+chat
 ```
 
-#### ⚡ **Fast Daily Usage (After Initial Build)**
-```bash
-# Quick start: Start + Chat (no rebuild)
-make quick-chat
-```
-
-#### 🔧 **Development Workflow**
-```bash
-# One-time setup (first time only)
-make setup
-
-# Daily usage (fast)
-make quick-chat
-
-# When you make code changes
-make build
-make quick-chat
-```
-
-#### 📋 **Step-by-Step Commands**
-```bash
-# Three-step process (if you prefer)
-make build    # Build images
-make start    # Start services in background
-make chat     # Open chat interface
-```
-
-**Note**: `make setup` builds everything once. After that, `make quick-chat` is fast (~10 seconds)!
-
-### 4. Interact with the System
-```bash
-# The terminal interface will start automatically
-# Try these example interactions:
-
-# Check availability
-"I'd like to schedule a meeting with Enrique"
-
-# Learn about Enrique
-"Tell me about Enrique's background"
-
-# Check specific availability
-"Is Enrique available this Friday afternoon?"
-```
-
-## 📋 Usage Examples
-
-### Booking a Meeting
-```
-You: I'd like to schedule a meeting with Enrique
-Assistant: I understand you'd like to schedule a meeting with Enrique.
-Do you have a specific date or time in mind, or would you like me to check his availability for this week?
-
-You: This Friday afternoon
-Assistant: Available time slots:
-1. Friday, January 17 at 2:00 PM - 3:00 PM
-2. Friday, January 17 at 3:30 PM - 4:30 PM
-...
-
-You: 1
-Assistant: Great! I've noted your slot selection.
-Now I need some information to complete the booking:
-• Your full name
-• Your email address
-...
-
-You: John Smith john@example.com
-Assistant: Meeting Successfully Booked! 🎉
-Details:
-• Date: Friday, January 17, 2025
-• Time: 2:00 PM - 3:00 PM
-• Attendee: john@example.com
-• Status: Booked
-```
-
-### Learning About Enrique
-```
-You: Tell me about Enrique's background
-Assistant: Based on Enrique's information:
-
-# About Enrique
-Enrique is an AI Studio student passionate about building intelligent systems...
-
-Would you like to schedule a meeting to learn more about Enrique's work and interests?
-```
-
-### Natural Exit
-```
-You: That's all for today, thanks!
-Assistant: You're very welcome! It was great helping you today.
-
-Goodbye! Have a great day!
-👋 Exiting Enrique's Crew AI System...
-```
-
-Or even more subtle:
-```
-You: Ok that's everything I needed
-Assistant: Perfect! I'm glad I could help you with everything you needed.
-
-Goodbye! Have a great day!
-👋 Exiting Enrique's Crew AI System...
-```
-
-## 🛠️ Available Commands
-
-### Make Commands (Recommended)
-```bash
-make help        # Show all available commands
-make setup       # Complete initial setup (submodules + build)
-make start-chat  # Build + Start + Chat (complete workflow)
-make quick-chat  # Start + Chat (fast daily usage)
-make build       # Build Docker images (when code changes)
-make start       # Start services in background
-make chat        # Open chat interface (requires services running)
-make stop        # Stop all services
-make clean       # Clean up containers and images
-make logs        # Show service logs
-make test        # Run tests
-```
-
-### Workflow Comparison
-| Command | Time | Use Case |
-|---------|------|----------|
-| `make setup` | ~3 minutes | First-time setup only |
-| `make start-chat` | ~3 minutes | Complete workflow (build + start + chat) |
-| `make quick-chat` | ~10 seconds | Daily usage (fast!) |
-| `make build` | ~2 minutes | After code changes |
-| `make chat` | Instant | When services already running |
-
-## 🔧 Configuration
-
-### Environment Variables
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `OPENAI_API_KEY` | OpenAI API key for LLM | Required |
-| `CALENDLY_LINK` | Enrique's public Calendly link | Required |
-| `MCP_SERVER_URL` | Playwright MCP server URL | `http://localhost:3000` |
-| `TIMEZONE` | Timezone for scheduling | `America/New_York` |
-| `BOOKING_BACKEND` | Backend to use | `playwright_mcp` |
-| `DEBUG` | Enable debug mode | `false` |
-
-### Special Commands
-- `:help` - Show available commands
-- `:reset` - Clear conversation state
-- `:debug` - Show current conversation state
-- `:quit` - Exit the application
-
-### Natural Exit
-The agent intelligently recognizes when you want to end the conversation. You can express this in many ways:
-- "That's all for today, thanks"
-- "Thanks, I'm good"
-- "That's everything I needed"
-- "Ok that's all thanks"
-- "I'm done"
-- "Goodbye"
-- "See you later"
-
-The agent uses natural language understanding to detect your intent to end the conversation, even if you don't explicitly say "exit" or "goodbye".
+This will launch the interactive terminal where you can converse with the agent.
 
 ## 🏗️ Project Structure
-
 ```
-/crew/
-  agents/           # CrewAI agent definitions
-    chat_agent.py
-    availability_agent.py
-    scheduler_agent.py
-    persona_agent.py
-  tasks/            # CrewAI task implementations
-    check_availability.py
-    book_meeting.py
-    answer_persona.py
-    orchestrate_conversation.py
-  backends/          # Backend implementations
-    base_backend.py
-    playwright_mcp.py
-  data/             # Static data
-    persona.md
-  config/           # Configuration
-    settings.py
-main.py             # Terminal interface
-requirements.txt    # Dependencies
-Dockerfile          # Container definition
-docker-compose.yml  # Multi-service setup
-Makefile           # Convenience commands
+/src/twin_crew/
+  config/
+    agents.yaml       # Defines the persona of the Chat Manager agent
+    tasks.yaml        # Defines the tasks for the worker crew
+  tools/
+    # Custom tools for the crew can be added here
+  crew.py             # Defines the crew, its agents, and tasks
+  custom_chat.py      # The core chat orchestration logic
+  main.py             # Entry points for the command-line scripts
+  named_agent.py      # A custom Agent class with a typed `name` property
 ```
 
-## 🧪 Testing
+## Next Steps: Open Questions
 
-```bash
-# Run tests
-make test
+The recent refactor has opened up several possibilities for future development:
 
-# Run specific test file
-docker-compose exec crewai-app python -m pytest tests/test_agents.py
-```
+-   **Multiple Crew Tools**: Should the chat manager be able to access multiple crews or tools at once?
+-   **Output Persistence**: Should we store the results of crew runs in a database or file store for later analysis?
+-   **"Run Again" Command**: Should there be a shortcut to re-run the last crew execution without needing a second confirmation?
 
-## 🔄 Development
-
-### Adding New Agents
-1. Create agent in `crew/agents/`
-2. Define agent creation function
-3. Add to main interface
-4. Update tests
-
-### Adding New Backends
-1. Implement `BaseBackend` interface
-2. Add backend selection logic
-3. Update environment configuration
-4. Test with both backends
-
-### Modifying Tasks
-1. Update task in `crew/tasks/`
-2. Modify agent assignments
-3. Test task execution
-4. Update documentation
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**MCP Server Connection Failed**
-```bash
-# Check if MCP server is running
-curl http://localhost:3000/health
-
-# Verify submodules are initialized
-git submodule status
-
-# Re-initialize submodules if needed
-make setup
-
-# Check Docker logs
-docker-compose logs playwright-mcp
-```
-
-**OpenAI API Errors**
-```bash
-# Verify API key is set
-echo $OPENAI_API_KEY
-
-# Check API key validity
-curl -H "Authorization: Bearer $OPENAI_API_KEY" https://api.openai.com/v1/models
-```
-
-**Docker Build Issues**
-```bash
-# Clean and rebuild
-make clean
-make build
-
-# Or complete reset
-make clean
-make setup
-```
-
-**Slow Startup Issues**
-```bash
-# Make sure you're using the fast commands
-make start-chat  # Fast (10 seconds)
-# NOT: docker-compose up --build  # Slow (3+ minutes)
-
-# If still slow, rebuild once
-make build
-make start-chat
-```
-
-## 📝 Assignment Requirements Checklist
-
-- ✅ **Two or more agents** with clear roles, goals, and backstories
-- ✅ **Two or more tasks** with descriptions and expected outputs
-- ✅ **Crew formation** that orchestrates agents and tasks
-- ✅ **Terminal interaction** to run the agent system
-- ✅ **Clean, well-commented code** following Python best practices
-- ✅ **Tool integration** (Playwright MCP for enhanced capabilities)
-
-## 🎓 Learning Outcomes
-
-This project demonstrates:
-
-1. **Multi-Agent Systems**: How specialized agents collaborate
-2. **Backend Abstraction**: Clean interfaces for different implementations
-3. **Docker Orchestration**: Containerized multi-service applications
-4. **Terminal Interfaces**: Interactive CLI design patterns
-5. **Error Handling**: Graceful failure management
-6. **Configuration Management**: Environment-based settings
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 👨‍💻 Author
-
-**Enrique Diaz de Leon Hicks**
-AI Studio Student
-Building intelligent multi-agent systems
+These questions will be explored in future development cycles.

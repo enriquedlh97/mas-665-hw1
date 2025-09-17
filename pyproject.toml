@@ -3,28 +3,28 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "mas-665-hw1"
+name = "twin_crew"
 version = "0.1.0"
 description = "Enrique Crew AI System - Multi-agent scheduling assistant"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "crewai>=0.186.1",
+    "crewai==0.100.0",
     "langchain-openai>=0.3.33",
     "pydantic-settings>=2.10.1",
     "pytz>=2025.2",
 ]
 
 [project.scripts]
-twin = "twin.main:run"
-run_crew = "twin.main:run"
-train = "twin.main:train"
-replay = "twin.main:replay"
-test = "twin.main:test"
-chat = "twin.main:chat"
+twin_crew = "twin_crew.main:run"
+run_crew = "twin_crew.main:run"
+train = "twin_crew.main:train"
+replay = "twin_crew.main:replay"
+test = "twin_crew.main:test"
+chat = "twin_crew.main:chat"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/twin"]
+packages = ["src/twin_crew"]
 
 [project.optional-dependencies]
 dev = [

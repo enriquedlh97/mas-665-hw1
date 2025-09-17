@@ -147,6 +147,22 @@ wheels = [
 ]
 
 [[package]]
+name = "auth0-python"
+version = "4.12.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "aiohttp" },
+    { name = "cryptography" },
+    { name = "pyjwt" },
+    { name = "requests" },
+    { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/13/06/e68f5d50aae554716f81e25613974e6d10b30ed503c75bbabbdbcfaca6d3/auth0_python-4.12.0.tar.gz", hash = "sha256:eb8c91dc5b8b12695affbcb37d74420eab35c91246036c83ed786b7ab9d5f292", size = 76019 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/b5/d0/02d8f80b4a279e566b10f01979f37850295885e72e7ebed38e4fd2a6f188/auth0_python-4.12.0-py3-none-any.whl", hash = "sha256:3a9c13e79ccb93ed26d000ab2cadbba1eb1cfb7724ff008bbdb694437d35ec04", size = 141988 },
+]
+
+[[package]]
 name = "backoff"
 version = "2.2.1"
 source = { registry = "https://pypi.org/simple" }
@@ -459,10 +475,11 @@ wheels = [
 
 [[package]]
 name = "crewai"
-version = "0.186.1"
+version = "0.100.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "appdirs" },
+    { name = "auth0-python" },
     { name = "blinker" },
     { name = "chromadb" },
     { name = "click" },
@@ -471,27 +488,23 @@ dependencies = [
     { name = "json5" },
     { name = "jsonref" },
     { name = "litellm" },
-    { name = "onnxruntime" },
     { name = "openai" },
     { name = "openpyxl" },
     { name = "opentelemetry-api" },
     { name = "opentelemetry-exporter-otlp-proto-http" },
     { name = "opentelemetry-sdk" },
     { name = "pdfplumber" },
-    { name = "portalocker" },
     { name = "pydantic" },
-    { name = "pyjwt" },
     { name = "python-dotenv" },
     { name = "pyvis" },
     { name = "regex" },
-    { name = "tokenizers" },
     { name = "tomli" },
     { name = "tomli-w" },
     { name = "uv" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/8f/59/2fb28345ce686b749e712efb505797d8d6073b7ebc9a5dcdf93c136d783f/crewai-0.186.1.tar.gz", hash = "sha256:3fd12954082c301434a7d8a2b20ddaf610eb6da1bba3a76aa38402e5c6462fbf", size = 6556945 }
+sdist = { url = "https://files.pythonhosted.org/packages/74/3e/801ef36c0aa0db616494a0ea9e04992faee66b9c4811479cab2bf49b22cf/crewai-0.100.0.tar.gz", hash = "sha256:d703b374f6e786bc7c19b8c4fa74c86f1ca14fd045a91bee299f4df5f9f18783", size = 7759073 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ec/cf/e9f6bc5448ab83509f29006ea1df17073d03b06be2000e8f0b330230e14b/crewai-0.186.1-py3-none-any.whl", hash = "sha256:92acde629f079d2c701ff8f5d648a270e64274d80c7f3cf0131c420a890d84d1", size = 423346 },
+    { url = "https://files.pythonhosted.org/packages/14/dc/4f914d063bc5787906d7871d558fb7e778079f7db77424a46611bac32b1f/crewai-0.100.0-py3-none-any.whl", hash = "sha256:9d8ba89d44c76c591d05ba25eb5373175ca61e1616fb862d149589ba8ade4ab1", size = 233188 },
 ]
 
 [[package]]
@@ -843,17 +856,18 @@ wheels = [
 
 [[package]]
 name = "httpx"
-version = "0.28.1"
+version = "0.27.2"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "anyio" },
     { name = "certifi" },
     { name = "httpcore" },
     { name = "idna" },
+    { name = "sniffio" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b1/df/48c586a5fe32a0f01324ee087459e112ebb7224f646c0b5023f5e79e9956/httpx-0.28.1.tar.gz", hash = "sha256:75e98c5f16b0f35b567856f597f06ff2270a374470a5c2392242528e3e3e42fc", size = 141406 }
+sdist = { url = "https://files.pythonhosted.org/packages/78/82/08f8c936781f67d9e6b9eeb8a0c8b4e406136ea4c3d1f89a5db71d42e0e6/httpx-0.27.2.tar.gz", hash = "sha256:f7c2be1d2f3c3c3160d441802406b206c2b76f5947b11115e6df10c6c65e66c2", size = 144189 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/2a/39/e50c7c3a983047577ee07d2a9e53faf5a69493943ec3f6a384bdc792deb2/httpx-0.28.1-py3-none-any.whl", hash = "sha256:d909fcccc110f8c7faf814ca82a9a4d816bc5a6dbfea25d6591d6985b8ba59ad", size = 73517 },
+    { url = "https://files.pythonhosted.org/packages/56/95/9377bcb415797e44274b51d46e3249eba641711cf3348050f76ee7b15ffc/httpx-0.27.2-py3-none-any.whl", hash = "sha256:7bb2708e112d8fdd7829cd4243970f0c223274051cb35ee80c03301ee29a3df0", size = 76395 },
 ]
 
 [[package]]
@@ -1225,7 +1239,7 @@ wheels = [
 
 [[package]]
 name = "litellm"
-version = "1.74.9"
+version = "1.57.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -1240,9 +1254,9 @@ dependencies = [
     { name = "tiktoken" },
     { name = "tokenizers" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/6d/5d/646bebdb4769d77e6a018b9152c9ccf17afe15d0f88974f338d3f2ee7c15/litellm-1.74.9.tar.gz", hash = "sha256:4a32eff70342e1aee4d1cbf2de2a6ed64a7c39d86345c58d4401036af018b7de", size = 9660510 }
+sdist = { url = "https://files.pythonhosted.org/packages/1a/9a/115bde058901b087e7fec1bed4be47baf8d5c78aff7dd2ffebcb922003ff/litellm-1.57.4.tar.gz", hash = "sha256:747a870ddee9c71f9560fc68ad02485bc1008fcad7d7a43e87867a59b8ed0669", size = 6304427 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/5f/e4/f1546746049c99c6b8b247e2f34485b9eae36faa9322b84e2a17262e6712/litellm-1.74.9-py3-none-any.whl", hash = "sha256:ab8f8a6e4d8689d3c7c4f9c3bbc7e46212cc3ebc74ddd0f3c0c921bb459c9874", size = 8740449 },
+    { url = "https://files.pythonhosted.org/packages/9f/72/35c8509cb2a37343c213b794420405cbef2e1fdf8626ee981fcbba3d7c5c/litellm-1.57.4-py3-none-any.whl", hash = "sha256:afe48924d8a36db801018970a101622fce33d117fe9c54441c0095c491511abb", size = 6592126 },
 ]
 
 [[package]]
@@ -1304,44 +1318,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/82/78/fedb03c7d5380df2427038ec8d973587e90561b2d90cd472ce9254cf348b/MarkupSafe-3.0.2-cp313-cp313t-win32.whl", hash = "sha256:ba8062ed2cf21c07a9e295d5b8a2a5ce678b913b45fdf68c32d95d6c1291e0b6", size = 15208 },
     { url = "https://files.pythonhosted.org/packages/4f/65/6079a46068dfceaeabb5dcad6d674f5f5c61a6fa5673746f42a9f4c233b3/MarkupSafe-3.0.2-cp313-cp313t-win_amd64.whl", hash = "sha256:e444a31f8db13eb18ada366ab3cf45fd4b31e4db1236a4448f68778c1d1a5a2f", size = 15739 },
 ]
-
-[[package]]
-name = "mas-665-hw1"
-version = "0.1.0"
-source = { editable = "." }
-dependencies = [
-    { name = "crewai" },
-    { name = "langchain-openai" },
-    { name = "pydantic-settings" },
-    { name = "pytz" },
-]
-
-[package.optional-dependencies]
-dev = [
-    { name = "mypy" },
-    { name = "pre-commit" },
-    { name = "ruff" },
-]
-
-[package.dev-dependencies]
-dev = [
-    { name = "pre-commit" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "crewai", specifier = ">=0.186.1" },
-    { name = "langchain-openai", specifier = ">=0.3.33" },
-    { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.18.1" },
-    { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=4.3.0" },
-    { name = "pydantic-settings", specifier = ">=2.10.1" },
-    { name = "pytz", specifier = ">=2025.2" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.13.0" },
-]
-provides-extras = ["dev"]
-
-[package.metadata.requires-dev]
-dev = [{ name = "pre-commit", specifier = ">=4.3.0" }]
 
 [[package]]
 name = "matplotlib-inline"
@@ -2098,18 +2074,6 @@ wheels = [
 ]
 
 [[package]]
-name = "portalocker"
-version = "2.7.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "pywin32", marker = "sys_platform == 'win32'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/1f/f8/969e6f280201b40b31bcb62843c619f343dcc351dff83a5891530c9dd60e/portalocker-2.7.0.tar.gz", hash = "sha256:032e81d534a88ec1736d03f780ba073f047a06c478b06e2937486f334e955c51", size = 20183 }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/8c/df/d4f711d168524f5aebd7fb30969eaa31e3048cf8979688cde3b08f6e5eb8/portalocker-2.7.0-py2.py3-none-any.whl", hash = "sha256:a07c5b4f3985c3cf4798369631fb7011adb498e2a46d8440efc75a8f29a0f983", size = 15502 },
-]
-
-[[package]]
 name = "posthog"
 version = "5.4.0"
 source = { registry = "https://pypi.org/simple" }
@@ -2630,25 +2594,6 @@ wheels = [
 ]
 
 [[package]]
-name = "pywin32"
-version = "311"
-source = { registry = "https://pypi.org/simple" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/7c/af/449a6a91e5d6db51420875c54f6aff7c97a86a3b13a0b4f1a5c13b988de3/pywin32-311-cp311-cp311-win32.whl", hash = "sha256:184eb5e436dea364dcd3d2316d577d625c0351bf237c4e9a5fabbcfa5a58b151", size = 8697031 },
-    { url = "https://files.pythonhosted.org/packages/51/8f/9bb81dd5bb77d22243d33c8397f09377056d5c687aa6d4042bea7fbf8364/pywin32-311-cp311-cp311-win_amd64.whl", hash = "sha256:3ce80b34b22b17ccbd937a6e78e7225d80c52f5ab9940fe0506a1a16f3dab503", size = 9508308 },
-    { url = "https://files.pythonhosted.org/packages/44/7b/9c2ab54f74a138c491aba1b1cd0795ba61f144c711daea84a88b63dc0f6c/pywin32-311-cp311-cp311-win_arm64.whl", hash = "sha256:a733f1388e1a842abb67ffa8e7aad0e70ac519e09b0f6a784e65a136ec7cefd2", size = 8703930 },
-    { url = "https://files.pythonhosted.org/packages/e7/ab/01ea1943d4eba0f850c3c61e78e8dd59757ff815ff3ccd0a84de5f541f42/pywin32-311-cp312-cp312-win32.whl", hash = "sha256:750ec6e621af2b948540032557b10a2d43b0cee2ae9758c54154d711cc852d31", size = 8706543 },
-    { url = "https://files.pythonhosted.org/packages/d1/a8/a0e8d07d4d051ec7502cd58b291ec98dcc0c3fff027caad0470b72cfcc2f/pywin32-311-cp312-cp312-win_amd64.whl", hash = "sha256:b8c095edad5c211ff31c05223658e71bf7116daa0ecf3ad85f3201ea3190d067", size = 9495040 },
-    { url = "https://files.pythonhosted.org/packages/ba/3a/2ae996277b4b50f17d61f0603efd8253cb2d79cc7ae159468007b586396d/pywin32-311-cp312-cp312-win_arm64.whl", hash = "sha256:e286f46a9a39c4a18b319c28f59b61de793654af2f395c102b4f819e584b5852", size = 8710102 },
-    { url = "https://files.pythonhosted.org/packages/a5/be/3fd5de0979fcb3994bfee0d65ed8ca9506a8a1260651b86174f6a86f52b3/pywin32-311-cp313-cp313-win32.whl", hash = "sha256:f95ba5a847cba10dd8c4d8fefa9f2a6cf283b8b88ed6178fa8a6c1ab16054d0d", size = 8705700 },
-    { url = "https://files.pythonhosted.org/packages/e3/28/e0a1909523c6890208295a29e05c2adb2126364e289826c0a8bc7297bd5c/pywin32-311-cp313-cp313-win_amd64.whl", hash = "sha256:718a38f7e5b058e76aee1c56ddd06908116d35147e133427e59a3983f703a20d", size = 9494700 },
-    { url = "https://files.pythonhosted.org/packages/04/bf/90339ac0f55726dce7d794e6d79a18a91265bdf3aa70b6b9ca52f35e022a/pywin32-311-cp313-cp313-win_arm64.whl", hash = "sha256:7b4075d959648406202d92a2310cb990fea19b535c7f4a78d3f5e10b926eeb8a", size = 8709318 },
-    { url = "https://files.pythonhosted.org/packages/c9/31/097f2e132c4f16d99a22bfb777e0fd88bd8e1c634304e102f313af69ace5/pywin32-311-cp314-cp314-win32.whl", hash = "sha256:b7a2c10b93f8986666d0c803ee19b5990885872a7de910fc460f9b0c2fbf92ee", size = 8840714 },
-    { url = "https://files.pythonhosted.org/packages/90/4b/07c77d8ba0e01349358082713400435347df8426208171ce297da32c313d/pywin32-311-cp314-cp314-win_amd64.whl", hash = "sha256:3aca44c046bd2ed8c90de9cb8427f581c479e594e99b5c0bb19b29c10fd6cb87", size = 9656800 },
-    { url = "https://files.pythonhosted.org/packages/c0/d2/21af5c535501a7233e734b8af901574572da66fcc254cb35d0609c9080dd/pywin32-311-cp314-cp314-win_arm64.whl", hash = "sha256:a508e2d9025764a8270f93111a970e1d0fbfc33f4153b388bb649b7eec4f9b42", size = 8932540 },
-]
-
-[[package]]
 name = "pyyaml"
 version = "6.0.2"
 source = { registry = "https://pypi.org/simple" }
@@ -3145,6 +3090,44 @@ sdist = { url = "https://files.pythonhosted.org/packages/eb/79/72064e6a701c21830
 wheels = [
     { url = "https://files.pythonhosted.org/packages/00/c0/8f5d070730d7836adc9c9b6408dec68c6ced86b304a9b26a14df072a6e8c/traitlets-5.14.3-py3-none-any.whl", hash = "sha256:b74e89e397b1ed28cc831db7aea759ba6640cb3de13090ca145426688ff1ac4f", size = 85359 },
 ]
+
+[[package]]
+name = "twin-crew"
+version = "0.1.0"
+source = { editable = "." }
+dependencies = [
+    { name = "crewai" },
+    { name = "langchain-openai" },
+    { name = "pydantic-settings" },
+    { name = "pytz" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "mypy" },
+    { name = "pre-commit" },
+    { name = "ruff" },
+]
+
+[package.dev-dependencies]
+dev = [
+    { name = "pre-commit" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "crewai", specifier = "==0.100.0" },
+    { name = "langchain-openai", specifier = ">=0.3.33" },
+    { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.18.1" },
+    { name = "pre-commit", marker = "extra == 'dev'", specifier = ">=4.3.0" },
+    { name = "pydantic-settings", specifier = ">=2.10.1" },
+    { name = "pytz", specifier = ">=2025.2" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.13.0" },
+]
+provides-extras = ["dev"]
+
+[package.metadata.requires-dev]
+dev = [{ name = "pre-commit", specifier = ">=4.3.0" }]
 
 [[package]]
 name = "typer"

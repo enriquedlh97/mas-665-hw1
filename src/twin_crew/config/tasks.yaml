@@ -1,9 +1,9 @@
 develop_pitch_outline_task:
   description: >
-    Review the user's raw startup idea (startup_idea) and Enrique's professional profile. 
+    Review the user's raw startup idea (startup_idea) and Enrique's professional profile.
     Your goal is to create a strategic pitch outline that highlights the synergy between the idea and Enrique's skills.
     The outline must be structured to be compelling to a technical co-founder.
-    
+
     **Enrique's Key Profile Points to Consider**:
     - Master's in Data Science (Harvard), background in Machine Learning and AI.
     - Professional experience as an ML Engineer at Graphite (NLP, Kubeflow, Airflow, scaling AI systems).
@@ -69,7 +69,7 @@ write_pitch_draft_task:
     {enrique_background}
 
   expected_output: >
-    A fully drafted startup pitch in markdown format. The pitch should be well-structured, persuasive, 
+    A fully drafted startup pitch in markdown format. The pitch should be well-structured, persuasive,
     and ready for review. It must clearly articulate the problem, solution, market, and co-founder fit.
     Target length: MAXIMUM 200 words.
   agent: pitch_writer
@@ -77,8 +77,8 @@ write_pitch_draft_task:
 refine_pitch_for_fit_task:
   description: >
     Review the drafted startup pitch. Your primary goal is to refine and polish it to maximize its appeal to Enrique as a potential technical co-founder.
-    Scrutinize the language, tone, and strategic positioning. 
-    
+    Scrutinize the language, tone, and strategic positioning.
+
     **Your Review Checklist**:
     - **Clarity and Impact**: Is the message sharp and instantly understandable?
     - **Technical Credibility**: Does the pitch sound credible to an experienced AI engineer? Avoid marketing fluff.

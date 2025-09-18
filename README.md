@@ -56,7 +56,7 @@ This project uses `uv` for dependency management and Python environment handling
 
 ### 1. Prerequisites
 - **uv**: Install from [https://docs.astral.sh/uv/getting-started/installation/#standalone-installer](https://docs.astral.sh/uv/getting-started/installation/#standalone-installer)
-- **Python 3.12.0**: Tested with Python 3.12.0
+- **Python 3.11.11**: Tested with Python 3.11.11
 - **OpenAI API key**: Required for the chat functionality
 
 ### 2. Installation
@@ -71,9 +71,29 @@ uv sync
 ```
 
 This will automatically:
-- Create a virtual environment with Python 3.12.0
+- Create a virtual environment with Python 3.11.11
 - Install all project dependencies
 - Set up the development environment
+
+### Dependency Management
+
+This project uses `uv` for fast dependency management. The project includes both:
+- **`pyproject.toml`**: Primary dependency specification (managed by `uv`)
+- **`requirements.txt`**: Generated dependency file for compatibility
+
+**Adding new dependencies:**
+```bash
+# Add a new dependency
+uv add package-name
+
+# Add a development dependency
+uv add --dev package-name
+
+# Update requirements.txt after adding dependencies
+uv pip freeze > requirements.txt
+```
+
+**Note**: Always run `uv pip freeze > requirements.txt` after adding new dependencies via `uv` to keep the requirements.txt file synchronized with your current environment.
 
 ### 3. Configuration
 The agent's persona and the crew's tasks are configured via YAML files.
@@ -93,7 +113,7 @@ The project uses `pyproject.toml` to define convenient scripts. To start the cha
 chat
 ```
 
-or if for some reason that files, run 
+or if for some reason that files, run
 ```
 uv run chat
 ```
@@ -164,5 +184,3 @@ The repository includes a `playwright-mcp` submodule for future iterations that 
 
 ### **Multi-Crew Architecture**
 The custom chat implementation is designed to be extended, allowing agents to access multiple crews as tools rather than being limited to a single crew. This will enable more sophisticated workflows and specialized task delegation.
-
-

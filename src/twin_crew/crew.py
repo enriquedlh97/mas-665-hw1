@@ -1,4 +1,5 @@
-from typing import Final
+from typing import Any, Final
+
 from crewai import Agent, Crew, Process, Task
 from crewai.project import CrewBase, agent, crew, task
 
@@ -13,9 +14,9 @@ class TwinCrew:
     agents_config: Final[str] = "config/agents.yaml"
     tasks_config: Final[str] = "config/tasks.yaml"
 
-    @agent
+    @agent  # type: ignore
     def chat_manager(self) -> NamedAgent:
-        config = self.agents_config["chat_manager"]
+        config: dict[str, Any] = self.agents_config["chat_manager"]  # type: ignore
         return NamedAgent(
             name=config["name"],
             config=config,
@@ -23,53 +24,57 @@ class TwinCrew:
             allow_delegation=True,
         )
 
-    @agent
+    @agent  # type: ignore
     def pitch_strategist(self) -> Agent:
-        return Agent(config=self.agents_config["pitch_strategist"], verbose=True)
+        return Agent(config=self.agents_config["pitch_strategist"], verbose=True)  # type: ignore
 
-    @agent
+    @agent  # type: ignore
     def pitch_writer(self) -> Agent:
         return Agent(
-            config=self.agents_config["pitch_writer"],
+            config=self.agents_config["pitch_writer"],  # type: ignore
             tools=[WordCounterTool()],
             verbose=True,
         )
 
-    @agent
+    @agent  # type: ignore
     def pitch_refiner(self) -> Agent:
         return Agent(
-            config=self.agents_config["pitch_refiner"],
+            config=self.agents_config["pitch_refiner"],  # type: ignore
             tools=[WordCounterTool()],
             verbose=True,
         )
 
-    @task
+    @task  # type: ignore
     def develop_pitch_outline_task(self) -> Task:
         return Task(
-            config=self.tasks_config["develop_pitch_outline_task"],
+            config=self.tasks_config["develop_pitch_outline_task"],  # type: ignore
         )
 
-    @task
+    @task  # type: ignore
     def write_pitch_draft_task(self) -> Task:
         return Task(
-            config=self.tasks_config["write_pitch_draft_task"],
+            config=self.tasks_config["write_pitch_draft_task"],  # type: ignore
         )
 
-    @task
+    @task  # type: ignore
     def refine_pitch_for_fit_task(self) -> Task:
         return Task(
-            config=self.tasks_config["refine_pitch_for_fit_task"],
+            config=self.tasks_config["refine_pitch_for_fit_task"],  # type: ignore
         )
 
-    @crew
+    @crew  # type: ignore
     def crew(self) -> Crew:
         """Creates the Twin crew"""
-        worker_agents: list[Agent] = [self.pitch_strategist(), self.pitch_writer(), self.pitch_refiner()]
+        worker_agents: list[Agent] = [
+            self.pitch_strategist(),
+            self.pitch_writer(),
+            self.pitch_refiner(),
+        ]
 
         return Crew(
             agents=worker_agents,
             # self.agents,
-            tasks=self.tasks,
+            tasks=self.tasks,  # type: ignore
             process=Process.sequential,
             verbose=False,
             chat_llm="gpt-4o",

@@ -148,7 +148,7 @@ wheels = [
 
 [[package]]
 name = "auth0-python"
-version = "4.12.0"
+version = "4.13.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiohttp" },
@@ -157,9 +157,9 @@ dependencies = [
     { name = "requests" },
     { name = "urllib3" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/13/06/e68f5d50aae554716f81e25613974e6d10b30ed503c75bbabbdbcfaca6d3/auth0_python-4.12.0.tar.gz", hash = "sha256:eb8c91dc5b8b12695affbcb37d74420eab35c91246036c83ed786b7ab9d5f292", size = 76019 }
+sdist = { url = "https://files.pythonhosted.org/packages/4f/87/3c54624c8fe121a68d36dd9f9158fa6878e4be378487b8f787ddc2fa2f3d/auth0_python-4.13.0.tar.gz", hash = "sha256:72f58bd26b078e3b493e4d24928cc75fa41842aae35cef488ed6f8db0fb701fb", size = 76115 }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/b5/d0/02d8f80b4a279e566b10f01979f37850295885e72e7ebed38e4fd2a6f188/auth0_python-4.12.0-py3-none-any.whl", hash = "sha256:3a9c13e79ccb93ed26d000ab2cadbba1eb1cfb7724ff008bbdb694437d35ec04", size = 141988 },
+    { url = "https://files.pythonhosted.org/packages/c0/01/3f52cf8ee6aa6e62f48020703ac3c67cf8a36ddc927dfde54b42c59a6e00/auth0_python-4.13.0-py3-none-any.whl", hash = "sha256:8e3266fcfc2e3cc4f477e01f964c0a6c9a3563653a2feb226355bc825cd4932c", size = 142088 },
 ]
 
 [[package]]

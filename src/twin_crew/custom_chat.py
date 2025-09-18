@@ -4,11 +4,11 @@ import re
 import sys
 import threading
 import time
-from typing import Any, Dict, List, Optional, Set
 from datetime import datetime
+from typing import Any
 
 import click
-from crewai import Agent, Crew
+from crewai import Crew
 from crewai.llm import LLM
 from crewai.types.crew_chat import ChatInputField, ChatInputs
 from crewai.utilities.llm_utils import create_llm
@@ -16,12 +16,14 @@ from crewai.utilities.llm_utils import create_llm
 from twin_crew.named_agent import NamedAgent
 
 
-def run_custom_chat(crew_instance: Crew, manager_agent: Optional[NamedAgent] = None) -> None:
+def run_custom_chat(
+    crew_instance: Crew, manager_agent: NamedAgent | None = None
+) -> None:
     """
     Generic interactive chat that mirrors crewAI's chat behavior while
     allowing a manager persona and manager-defined LLM when provided.
     """
-    chat_llm: Optional[LLM] = initialize_chat_llm(crew_instance, manager_agent)
+    chat_llm: LLM | None = initialize_chat_llm(crew_instance, manager_agent)
     if not chat_llm:
         return
 
@@ -32,10 +34,14 @@ def run_custom_chat(crew_instance: Crew, manager_agent: Optional[NamedAgent] = N
 
     try:
         crew_name: str = crew_instance.__class__.__name__
-        chat_inputs: ChatInputs = generate_crew_chat_inputs(crew_instance, crew_name, chat_llm)
+        chat_inputs: ChatInputs = generate_crew_chat_inputs(
+            crew_instance, crew_name, chat_llm
+        )
         tool_schema: dict = generate_crew_tool_schema(chat_inputs)
         system_message: str = build_system_message(chat_inputs, manager_agent)
-        introductory_message: str = chat_llm.call(messages=[{"role": "system", "content": system_message}])
+        introductory_message: str = chat_llm.call(
+            messages=[{"role": "system", "content": system_message}]
+        )
     finally:
         loading_complete.set()
         loading_thread.join()
@@ -44,20 +50,20 @@ def run_custom_chat(crew_instance: Crew, manager_agent: Optional[NamedAgent] = N
     speaker_label: str = get_agent_display_name(manager_agent)
     click.secho(f"\n{speaker_label}: {introductory_message}\n", fg="green")
 
-    messages: List[Dict[str, str]] = [
+    messages: list[dict[str, str]] = [
         {"role": "system", "content": system_message},
         {"role": "assistant", "content": introductory_message},
     ]
 
     # Expose a single callable tool = the crew itself (generic)
-    available_functions: Dict[str, Any] = {
+    available_functions: dict[str, Any] = {
         chat_inputs.crew_name: create_tool_function(crew_instance, messages),
     }
 
     chat_loop(chat_llm, messages, tool_schema, available_functions, speaker_label)
 
 
-def initialize_chat_llm(crew: Crew, manager_agent: Optional[NamedAgent]) -> Optional[LLM]:
+def initialize_chat_llm(crew: Crew, manager_agent: NamedAgent | None) -> LLM | None:
     """
     Initialize LLM with priority:
     1) manager_agent.llm if provided
@@ -66,9 +72,9 @@ def initialize_chat_llm(crew: Crew, manager_agent: Optional[NamedAgent]) -> Opti
     """
     try:
         if manager_agent and getattr(manager_agent, "llm", None):
-            return create_llm(getattr(manager_agent, "llm"))
+            return create_llm(manager_agent.llm)
         if getattr(crew, "chat_llm", None):
-            return create_llm(getattr(crew, "chat_llm"))
+            return create_llm(crew.chat_llm)
         return create_llm("gpt-4o")
     except Exception as e:
         click.secho(f"Unable to initialize chat LLM: {e}", fg="red")
@@ -87,13 +93,18 @@ def show_loading(event: threading.Event) -> None:
     print()
 
 
-def build_system_message(chat_inputs: ChatInputs, manager_agent: Optional[NamedAgent]) -> str:
+def build_system_message(
+    chat_inputs: ChatInputs, manager_agent: NamedAgent | None
+) -> str:
     """
     Persona-first system message if a manager is provided; otherwise neutral,
     but always includes dynamic crew name, description, and required inputs.
     """
     required_fields_str: str = (
-        ", ".join(f"{field.name} (desc: {field.description or 'n/a'})" for field in chat_inputs.inputs)
+        ", ".join(
+            f"{field.name} (desc: {field.description or 'n/a'})"
+            for field in chat_inputs.inputs
+        )
         or "(No required fields detected)"
     )
 
@@ -131,29 +142,35 @@ def build_system_message(chat_inputs: ChatInputs, manager_agent: Optional[NamedA
     )
 
 
-def create_tool_function(crew: Crew, messages: List[Dict[str, str]]) -> Any:
+def create_tool_function(crew: Crew, messages: list[dict[str, str]]) -> Any:
     """Create a wrapper that runs the crew with the chat transcript included."""
-    def run_with_messages(**kwargs):
+
+    def run_with_messages(**kwargs: Any) -> str:
         # Hidden pre-call note so the model can remember a tool call started
         start_time = datetime.now().isoformat(timespec="seconds")
-        messages.append({
-            "role": "system",
-            "content": f"[state] About to call crew '{crew.__class__.__name__}' at {start_time}. Next assistant message (message I send) will be the output received.",
-        })
+        messages.append(
+            {
+                "role": "system",
+                "content": f"[state] About to call crew '{crew.__class__.__name__}' at {start_time}. Next assistant message (message I send) will be the output received.",
+            }
+        )
 
         result_str = run_crew_tool(crew, messages, **kwargs)
         # Hidden persistent memory for the model about tool usage
         run_time = datetime.now().isoformat(timespec="seconds")
-        messages.append({
-            "role": "system",
-            "content": f"[state] Crew '{crew.__class__.__name__}' was called successfully at {run_time}."
-        })
+        messages.append(
+            {
+                "role": "system",
+                "content": f"[state] Crew '{crew.__class__.__name__}' was called successfully at {run_time}.",
+            }
+        )
         # Return raw result string; the assistant will acknowledge then display this content
         return result_str
+
     return run_with_messages
 
 
-def run_crew_tool(crew: Crew, messages: List[Dict[str, str]], **kwargs) -> str:
+def run_crew_tool(crew: Crew, messages: list[dict[str, str]], **kwargs: Any) -> str:
     """
     Runs the crew using crew.kickoff(inputs=kwargs) and returns the output as string.
     Mirrors original behavior and includes serialized chat messages for context.
@@ -170,9 +187,9 @@ def run_crew_tool(crew: Crew, messages: List[Dict[str, str]], **kwargs) -> str:
 
 def chat_loop(
     chat_llm: LLM,
-    messages: List[Dict[str, str]],
-    crew_tool_schema: Dict[str, Any],
-    available_functions: Dict[str, Any],
+    messages: list[dict[str, str]],
+    crew_tool_schema: dict[str, Any],
+    available_functions: dict[str, Any],
     speaker_label: str,
 ) -> None:
     """Main chat loop for interacting with the user."""
@@ -181,7 +198,12 @@ def chat_loop(
             flush_input()
             user_input: str = get_user_input()
             handle_user_input(
-                user_input, chat_llm, messages, crew_tool_schema, available_functions, speaker_label
+                user_input,
+                chat_llm,
+                messages,
+                crew_tool_schema,
+                available_functions,
+                speaker_label,
             )
         except KeyboardInterrupt:
             click.echo("\nExiting chat. Goodbye!")
@@ -197,7 +219,7 @@ def get_user_input() -> str:
         "\nYou (type your message below. Press 'Enter' twice when you're done, or type 'exit' to quit):",
         fg="blue",
     )
-    user_input_lines: List[str] = []
+    user_input_lines: list[str] = []
     while True:
         line: str = input()
         if line.strip().lower() == "exit":
@@ -211,9 +233,9 @@ def get_user_input() -> str:
 def handle_user_input(
     user_input: str,
     chat_llm: LLM,
-    messages: List[Dict[str, str]],
-    crew_tool_schema: Dict[str, Any],
-    available_functions: Dict[str, Any],
+    messages: list[dict[str, str]],
+    crew_tool_schema: dict[str, Any],
+    available_functions: dict[str, Any],
     speaker_label: str,
 ) -> None:
     """Handle user input and generate assistant response."""
@@ -248,7 +270,9 @@ def handle_user_input(
             "Write a single-sentence acknowledgement that you just received the crew's output "
             "and that the next message will be the result from the crew. Do not include the result itself."
         )
-        acknowledgement_response = chat_llm.call(messages=messages + [{"role": "user", "content": acknowledgement_prompt}])
+        acknowledgement_response = chat_llm.call(
+            messages=messages + [{"role": "user", "content": acknowledgement_prompt}]
+        )
         messages.append({"role": "assistant", "content": acknowledgement_response})
         click.secho(f"\n{speaker_label}: {acknowledgement_response}\n", fg="green")
         messages.append({"role": "system", "content": ""})
@@ -261,38 +285,44 @@ def flush_input() -> None:
     """Flush any pending input from the user."""
     if platform.system() == "Windows":
         import msvcrt
-        while msvcrt.kbhit():
-            msvcrt.getch()
+
+        while msvcrt.kbhit():  # type: ignore
+            msvcrt.getch()  # type: ignore
     else:
         import termios
+
         termios.tcflush(sys.stdin, termios.TCIFLUSH)
 
 
 # ---------- Dynamic crew analysis (ported from original) ----------
 
-def get_agent_display_name(manager_agent: Optional[NamedAgent]) -> str:
+
+def get_agent_display_name(manager_agent: NamedAgent | None) -> str:
     """Extract the agent name for chat labels."""
     if not manager_agent:
         return "Assistant"
     return manager_agent.name
 
+
 def generate_crew_chat_inputs(crew: Crew, crew_name: str, chat_llm: LLM) -> ChatInputs:
     """Analyze the crew to construct ChatInputs containing name, description, and input fields."""
-    required_inputs: Set[str] = fetch_required_inputs(crew)
+    required_inputs: set[str] = fetch_required_inputs(crew)
 
-    input_fields: List[ChatInputField] = []
+    input_fields: list[ChatInputField] = []
     for input_name in required_inputs:
         description = generate_input_description_with_ai(input_name, crew, chat_llm)
         input_fields.append(ChatInputField(name=input_name, description=description))
 
     crew_description: str = generate_crew_description_with_ai(crew, chat_llm)
-    return ChatInputs(crew_name=crew_name, crew_description=crew_description, inputs=input_fields)
+    return ChatInputs(
+        crew_name=crew_name, crew_description=crew_description, inputs=input_fields
+    )
 
 
-def fetch_required_inputs(crew: Crew) -> Set[str]:
+def fetch_required_inputs(crew: Crew) -> set[str]:
     """Extract placeholders from the crew's tasks and agents, e.g., {brain_dump}."""
     placeholder_pattern = re.compile(r"\{(.+?)\}")
-    required_inputs: Set[str] = set()
+    required_inputs: set[str] = set()
 
     for task in crew.tasks:
         text = f"{task.description or ''} {task.expected_output or ''}"
@@ -305,15 +335,23 @@ def fetch_required_inputs(crew: Crew) -> Set[str]:
     return required_inputs
 
 
-def generate_input_description_with_ai(input_name: str, crew: Crew, chat_llm: LLM) -> str:
+def generate_input_description_with_ai(
+    input_name: str, crew: Crew, chat_llm: LLM
+) -> str:
     """Generate a concise input description using AI based on crew context (same behavior as original)."""
-    context_texts: List[str] = []
+    context_texts: list[str] = []
     placeholder_pattern = re.compile(r"\{(.+?)\}")
 
     for task in crew.tasks:
-        if f"{{{input_name}}}" in (task.description or "") or f"{{{input_name}}}" in (task.expected_output or ""):
-            task_description = placeholder_pattern.sub(lambda m: m.group(1), task.description or "")
-            expected_output = placeholder_pattern.sub(lambda m: m.group(1), task.expected_output or "")
+        if f"{{{input_name}}}" in (task.description or "") or f"{{{input_name}}}" in (
+            task.expected_output or ""
+        ):
+            task_description = placeholder_pattern.sub(
+                lambda m: m.group(1), task.description or ""
+            )
+            expected_output = placeholder_pattern.sub(
+                lambda m: m.group(1), task.expected_output or ""
+            )
             context_texts.append(f"Task Description: {task_description}")
             context_texts.append(f"Expected Output: {expected_output}")
 
@@ -325,7 +363,9 @@ def generate_input_description_with_ai(input_name: str, crew: Crew, chat_llm: LL
         ):
             agent_role = placeholder_pattern.sub(lambda m: m.group(1), agent.role or "")
             agent_goal = placeholder_pattern.sub(lambda m: m.group(1), agent.goal or "")
-            agent_backstory = placeholder_pattern.sub(lambda m: m.group(1), agent.backstory or "")
+            agent_backstory = placeholder_pattern.sub(
+                lambda m: m.group(1), agent.backstory or ""
+            )
             context_texts.append(f"Agent Role: {agent_role}")
             context_texts.append(f"Agent Goal: {agent_goal}")
             context_texts.append(f"Agent Backstory: {agent_backstory}")
@@ -346,19 +386,25 @@ def generate_input_description_with_ai(input_name: str, crew: Crew, chat_llm: LL
 
 def generate_crew_description_with_ai(crew: Crew, chat_llm: LLM) -> str:
     """Generate a short crew description from tasks and agents (same behavior as original)."""
-    context_texts: List[str] = []
+    context_texts: list[str] = []
     placeholder_pattern = re.compile(r"\{(.+?)\}")
 
     for task in crew.tasks:
-        task_description = placeholder_pattern.sub(lambda m: m.group(1), task.description or "")
-        expected_output = placeholder_pattern.sub(lambda m: m.group(1), task.expected_output or "")
+        task_description = placeholder_pattern.sub(
+            lambda m: m.group(1), task.description or ""
+        )
+        expected_output = placeholder_pattern.sub(
+            lambda m: m.group(1), task.expected_output or ""
+        )
         context_texts.append(f"Task Description: {task_description}")
         context_texts.append(f"Expected Output: {expected_output}")
 
     for agent in crew.agents:
         agent_role = placeholder_pattern.sub(lambda m: m.group(1), agent.role or "")
         agent_goal = placeholder_pattern.sub(lambda m: m.group(1), agent.goal or "")
-        agent_backstory = placeholder_pattern.sub(lambda m: m.group(1), agent.backstory or "")
+        agent_backstory = placeholder_pattern.sub(
+            lambda m: m.group(1), agent.backstory or ""
+        )
         context_texts.append(f"Agent Role: {agent_role}")
         context_texts.append(f"Agent Goal: {agent_goal}")
         context_texts.append(f"Agent Backstory: {agent_backstory}")
@@ -379,14 +425,14 @@ def generate_crew_description_with_ai(crew: Crew, chat_llm: LLM) -> str:
 
 def generate_crew_tool_schema(crew_inputs: ChatInputs) -> dict:
     """Build Littellm 'function' schema for the crew (same shape as original)."""
-    properties: Dict[str, Any] = {}
+    properties: dict[str, Any] = {}
     for field in crew_inputs.inputs:
         properties[field.name] = {
             "type": "string",
             "description": field.description or "No description provided",
         }
 
-    required_fields: List[str] = [field.name for field in crew_inputs.inputs]
+    required_fields: list[str] = [field.name for field in crew_inputs.inputs]
 
     return {
         "type": "function",
@@ -400,4 +446,3 @@ def generate_crew_tool_schema(crew_inputs: ChatInputs) -> dict:
             },
         },
     }
-

@@ -1,146 +1,114 @@
-generate_outline_task:
+develop_pitch_outline_task:
   description: >
-    Review the raw brain dump provided by the newsletter creator and synthesize 
-    the information into a single irresistible subject line and a congruent outline. 
-    Use the following context to guide your work:
+    Review the user's raw startup idea (startup_idea) and Enrique's professional profile. 
+    Your goal is to create a strategic pitch outline that highlights the synergy between the idea and Enrique's skills.
+    The outline must be structured to be compelling to a technical co-founder.
+    
+    **Enrique's Key Profile Points to Consider**:
+    - Master's in Data Science (Harvard), background in Machine Learning and AI.
+    - Professional experience as an ML Engineer at Graphite (NLP, Kubeflow, Airflow, scaling AI systems).
+    - Passion for applied AI, agentic systems, systems engineering, and building production-grade infrastructure.
+    - Stated interest in building products for AI agents, not just humans.
 
-    **Target Audience**: 
-    - Full stack AI developers building AI apps that rely on LLMs like ChatGPT, Gemini, etc.
-    - AI automation experts using AI tools like ChatGPT in combination with automation tools like Make and N8N.
-    These individuals seek to attract high-value leads, establish themselves as experts, and create sustainable freelance income. 
-    They may feel stuck, underpaid, or uncertain about how to succeed in the competitive AI market.
+    **Your Outline Should Include**:
+    1.  **Core Value Proposition**: A single, powerful sentence describing the startup's mission.
+    2.  **The Problem**: Clearly define the problem being solved.
+    3.  **The Solution**: Describe the proposed product or service.
+    4.  **Why Us? (The Co-Founder Fit)**: This is the most critical section. Explicitly state why the combination of the user's idea and Enrique's specific background creates a uniquely qualified founding team.
+    5.  **Initial Market & Opportunity**: Briefly describe the target audience and market potential.
 
-    **Goals for the Newsletter**: 
-    - Educate readers about their problems, even if they're unaware of them.
-    - Provide actionable advice to help them build a personal brand.
-    - Transition readers through the 5 stages of buyer awareness:
-      Unaware > Problem Aware > Solution Aware > Product Aware > Most Aware.
-    - Subtly promote RadicalWorks.ai Consulting and AI Authority Accelerator 
-      while maintaining value-driven content.
+    **Steps to Execute**:
+    - **Analyze the Startup Idea**: Identify core problem, solution, market opportunity, and technical requirements.
+    - **Map Enrique's Background**: Review his AI/ML expertise, systems engineering strengths, and interests in agentic systems.
+    - **Find Strategic Alignment**: Identify where Enrique's skills directly solve technical challenges and accelerate development.
+    - **Develop Pitch Structure**: Craft powerful core value proposition and structured outline with clear sections.
 
-    **Best Practices for Headlines**:
-    - Write short, curiosity-driven subject lines (5–15 words max).
-    - Use proven hooks (e.g., solve a problem with little effort, provide value 
-      for minimal time or cost, unlock desirable outcomes instantly).
-    - Use conversational, sentence-case language.
-    - Incorporate visceral language and "Name & Claim" ideas where relevant.
+    **Rules for Creating Compelling Co-Founder Pitches**:
+    - **Rule #1: Lead with Technical Synergy**: Always start with how Enrique's specific skills solve critical technical challenges.
+    - **Rule #2: Showcase Complementary Strengths**: Highlight how user's domain knowledge + Enrique's technical skills = unstoppable team.
+    - **Rule #3: Create Urgency with "Why Now"**: Connect Enrique's current interests (agentic systems, AI infrastructure) to the startup's mission.
 
-    **Best Practices for Outlines**:
-    - Ensure the outline fulfills the promise of the headline and is skimmable.
-    - Include sections such as:
-      - Intro: Grab attention and highlight the audience's problem.
-      - Deep Dive: Offer actionable advice, step-by-step frameworks, or insights.
-      - Curated List (optional): Add bonus resources, tools, or links.
-      - Conclusion: Reinforce takeaways and encourage action.
-      - PS: Drive engagement or referrals.
-    - Add 2-3 potential talking points for each section to guide the next task.
+    Here is the user's original startup idea:
+    {startup_idea}
 
-    Here is the author's original brain dump:
-    {brain_dump}
+    Enrique's background information:
+    {enrique_background}
 
   expected_output: >
-    - A polished subject line that hooks the audience and aligns with the newsletter's goals.
-    - A complete outline with clear sections and potential talking points for each.
-  agent: synthesizer
+    - A sharp, one-sentence Core Value Proposition.
+    - A structured pitch outline with clear sections and talking points for each, emphasizing the "Why Us?" angle.
+    - Specific references to Enrique's background and how it aligns with the startup's technical needs.
+  agent: pitch_strategist
 
-
-write_newsletter_task:
+write_pitch_draft_task:
   description: >
-    Using the subject line and outline provided by the Synthesizer, create a complete 
-    newsletter draft for AI Developer Weekly. 
-    Make sure the newsletter is between 500 and 1,000 words.
-    Ensure the newsletter aligns with the following context:
+    Using the strategic outline provided, write a complete and persuasive draft of the startup pitch.
+    The tone should be confident, clear, and professional, aimed at a technical and business-savvy audience.
+    Flesh out each section of the outline, turning bullet points into compelling paragraphs.
+    Ensure the "Why Us?" section is particularly strong, making a clear and enthusiastic case for the co-founder partnership.
+    The total length should be concise, with a MAXIMUM of 200 words. If the draft exceeds 200 words, you must revise and condense it.
 
-    **Target Audience**: 
-    - Full stack AI developers building AI apps that rely on LLMs like ChatGPT, Gemini, etc.
-    - AI automation experts using AI tools like ChatGPT in combination with automation tools like Make and N8N.
-    These individuals aim to attract high-value leads, establish themselves as 
-    experts, and create sustainable freelance income. Many feel stuck, underpaid, or 
-    uncertain about how to succeed in the competitive AI market.
+    **Target Length**: MAXIMUM 200 words (use WordCounterTool to ensure proper length and revise if over limit)
 
-    **Goals for the Newsletter**:
-    - Educate readers about their problems, even if they're unaware of them.
-    - Provide actionable advice and solutions to help them build their personal brand.
-    - Transition readers through the 5 stages of buyer awareness:
-      Unaware > Problem Aware > Solution Aware > Product Aware > Most Aware.
-    - Subtly promote RadicalWorks.ai Consulting and AI Authority Accelerator while 
-      delivering value-driven content.
+    **Best Practices for Writing the Pitch**:
+    - **Start with the Hook**: Open with a compelling problem statement that resonates with Enrique's interests.
+    - **Develop the Solution Narrative**: Clearly explain how the product/service works, highlighting technical innovation.
+    - **Build the Co-Founder Case**: Dedicate substantial section to "Why Enrique" - reference his specific background.
+    - **Address Market and Opportunity**: Provide credible market size and growth projections.
+    - **Create Urgency and Call to Action**: End with compelling reason why Enrique should join now.
 
-    **Best Practices for Writing the Newsletter**:
-    - Use a conversational and motivational tone inspired by Nicolas Cole.
-    - Start with a strong hook in the intro to capture attention.
-    - Ensure each section is easy to skim (e.g., use subheadings, bullet points, and short paragraphs).
-    - Provide actionable insights in the Deep Dive, formatted as a step-by-step guide or framework.
-      - This is the most important part of the newsletter so provide plenty of content in here
-        by expanding in each sub-section through examples, case studies, and other relevant content.
-    - Do not write in long paragraphs. Instead, make sure your writing is skimmable and easy to consume
-      which means breaking up contents into easy to read chunks with subheadings, bullet points, and short paragraphs.
-      When writing paragraphs, use the 1-3-1 style, 1-5-1 style, 1-3-1-1 style, etc to make 
-      the content more skimmable and easy to read.
-    - If applicable, include a curated list of tools, resources, or links relevant to the topic.
-    - Add a conclusion that reinforces key takeaways and includes a strong CTA.
-    - Use a compelling PS to encourage referrals, engagement, or sign-ups.
+    **Rules for Writing Compelling Startup Pitches**:
+    - **Rule #1: Lead with Technical Credibility**: Use precise technical language that shows understanding of Enrique's expertise.
+    - **Rule #2: Show, Don't Tell**: Use concrete examples instead of abstract promises, reference specific technologies Enrique has worked with.
+    - **Rule #3: Make It Personal**: Connect the startup's mission to Enrique's stated interests (agentic systems, AI infrastructure).
 
-    Here is the author's original brain dump:
-    {brain_dump}
+    Here is the user's original startup idea:
+    {startup_idea}
+
+    Enrique's background information:
+    {enrique_background}
 
   expected_output: >
-    - A fully drafted newsletter that includes:
-      - A captivating intro that sets the tone.
-      - A Deep Dive section offering actionable advice or insights.
-      - Optional curated resources or tools (if specified in the outline).
-      - A conclusion summarizing the takeaways and encouraging action.
-      - A PS driving referrals, engagement, or product sign-ups.
-    - The newsletter should be formatted as markdown, without '```'.
-  agent: newsletter_writer
+    A fully drafted startup pitch in markdown format. The pitch should be well-structured, persuasive, 
+    and ready for review. It must clearly articulate the problem, solution, market, and co-founder fit.
+    Target length: MAXIMUM 200 words.
+  agent: pitch_writer
 
-
-review_newsletter_task:
+refine_pitch_for_fit_task:
   description: >
-    Review the complete newsletter draft created by the Newsletter Writer. Ensure 
-    the content is polished, engaging, and meets the goals of AI Developer Weekly. 
-    Make sure the newsletter is between 500 and 1,000 words.
-    Incorporate the following context to guide the review process:
+    Review the drafted startup pitch. Your primary goal is to refine and polish it to maximize its appeal to Enrique as a potential technical co-founder.
+    Scrutinize the language, tone, and strategic positioning. 
+    
+    **Your Review Checklist**:
+    - **Clarity and Impact**: Is the message sharp and instantly understandable?
+    - **Technical Credibility**: Does the pitch sound credible to an experienced AI engineer? Avoid marketing fluff.
+    - **Alignment with Enrique's Interests**: Does the pitch connect with his stated passion for agentic systems, applied AI, and scalable infrastructure? If not, subtly rephrase parts to create that connection.
+    - **Co-Founder Fit**: Is the "Why Us?" section convincing? Does it make Enrique feel like he is the missing piece of the puzzle? Strengthen this section if needed.
+    - **Final Polish**: Check for any typos, grammatical errors, or awkward phrasing. Ensure the final output is professional and ready to be presented.
 
-    **Target Audience**: 
-    - Full stack AI developers building AI apps that rely on LLMs like ChatGPT, Gemini, etc.
-    - AI automation experts using AI tools like ChatGPT in combination with automation tools like Make and N8N.
-    These individuals are looking to attract high-value leads, 
-    establish themselves as experts, and create sustainable freelance income. They 
-    may feel stuck, underpaid, or uncertain about how to position themselves in the AI market.
+    **Steps to Execute**:
+    - **Review Technical Credibility**: Verify all technical claims are accurate and specific.
+    - **Analyze Co-Founder Fit Section**: Ensure the "Why Enrique" section is compelling and specific.
+    - **Check Strategic Positioning**: Ensure the pitch aligns with Enrique's stated interests.
+    - **Polish Language and Flow**: Improve clarity and conciseness throughout.
+    - **Final Enrique Alignment Check**: Verify the pitch speaks to his technical background and interests.
 
-    **Goals for the Newsletter**:
-    - Ensure the newsletter educates readers about their challenges, even if they're 
-      not aware of them yet.
-    - Provide actionable solutions to help them build their personal brand and achieve 
-      their goals.
-    - Maintain alignment with the 5 stages of buyer awareness:
-      Unaware > Problem Aware > Solution Aware > Product Aware > Most Aware.
-    - Subtly but effectively promote RadicalWorks.ai Consulting and the AI Authority Accelerator.
-
-    **Best Practices for Reviewing**:
-    - Check the newsletter for tone and style:
-      - Ensure it is conversational, motivational, and inspired by Nicolas Cole's style.
-      - Confirm that it speaks directly to the audience's pain points and aspirations.
-    - Ensure skimmability:
-      - Check formatting (short paragraphs, subheadings, bullet points).
-      - Verify that the intro hooks the reader and each section flows logically.
-    - Review the Deep Dive:
-      - Confirm the actionable advice is clear, practical, and aligned with the subject line and outline.
-    - Confirm the CTA is persuasive but not pushy, subtly promoting products/services.
-    - Cross-check against the original brain dump from the newsletter creator to ensure all key ideas are included.
+    **Rules for Refining Co-Founder Pitches**:
+    - **Rule #1: Technical Precision Over Marketing Speak**: Replace vague terms with specific technologies.
+    - **Rule #2: Enrique-Specific Language**: Reference his specific experiences (Graphite, Harvard, MIT AI Studio).
+    - **Rule #3: Credibility Over Excitement**: Ensure all claims are backed by logic or evidence.
 
     Important:
-    - Only respond with the final newsletter draft, no other text or commentary.
+    - Only respond with the final, polished pitch draft. Do not include any other text, notes, or commentary.
+    - Ensure the pitch is MAXIMUM 200 words (use WordCounterTool to verify and revise if over limit).
 
-    Here is the author's original brain dump:
-    {brain_dump}
-    
+    Here is the user's original startup idea:
+    {startup_idea}
+
+    Enrique's background information:
+    {enrique_background}
 
   expected_output: >
-    - A polished and finalized newsletter draft that:
-      - Captures the audience's attention with a strong hook.
-      - Provides actionable, engaging, and educational content.
-      - Includes subtle yet compelling product/service mentions.
-      - Ensures skimmability and readability throughout.
-  agent: newsletter_editor
+    A final, polished startup pitch in markdown format. The pitch should be persuasive, strategically sound, and perfectly tailored to appeal to Enrique.
+    Target length: MAXIMUM 200 words.
+  agent: pitch_refiner

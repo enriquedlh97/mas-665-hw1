@@ -1,10 +1,10 @@
 # Enrique Crew AI - Twin Agent System
 
-A sophisticated, persona-driven AI chat system built on `crewAI`. This project provides a generic and extensible framework for creating conversational agents that can intelligently execute complex tasks by leveraging a `crew` as a callable tool.
+A sophisticated, persona-driven AI chat system built on `crewAI`. This project provides a generic and extensible framework for creating a conversational agent that helps users craft a compelling startup pitch designed to attract its persona, Enrique, as a potential technical co-founder.
 
 ## 🎯 Project Overview
 
-This system has been refactored into a flexible chat application that dynamically builds its capabilities around a configured `crewAI` crew. Instead of a hard-coded multi-agent setup, it now exposes an entire crew as a single, powerful tool to a chat manager agent.
+This system has been refactored into a flexible chat application that dynamically builds its capabilities around a configured `crewAI` crew. Instead of a hard-coded multi-agent setup, it now exposes an entire **pitch-crafting crew** as a single, powerful tool to a chat manager agent.
 
 The core of the application is a custom chat orchestrator that:
 1.  **Represents a Persona**: The chat is managed by a "manager" agent (e.g., "Enrique"), who drives the conversation's tone and personality.
@@ -29,9 +29,21 @@ The current architecture is designed for clarity, reliability, and flexibility.
 
 This design makes the system incredibly flexible. You can add or remove agents, tasks, and tools to the `TwinCrew`, and the chat interface will adapt without requiring any code changes.
 
+## ✨ System Capabilities
+
+The system is designed to be a proactive and strategic partner in developing a co-founder pitch.
+
+-   **Proactive Pitch Development**: Enrique (the Chat Manager) proactively asks for the user's startup idea and gathers all necessary details to create a tailored pitch.
+-   **Strategic 3-Stage Pitch Generation**: The worker crew executes a sophisticated three-step process:
+    1.  **Strategize**: An agent analyzes the idea against Enrique's background to find the perfect co-founder fit.
+    2.  **Draft**: A writer transforms the strategy into a persuasive pitch.
+    3.  **Refine**: An editor polishes the draft, ensuring it's concise (max 200 words) and impactful.
+-   **Automated Background Integration**: Enrique's professional background is automatically and internally passed to the crew, ensuring every pitch is perfectly tailored to his skills and interests without the user needing to provide it.
+-   **Clean, Integrated Output**: The final pitch is delivered directly in the chat as a clean string, with no messy file outputs or markdown blocks.
+
 ### Runtime Flow
 1.  The chat starts, building the Chat Manager agent from YAML configuration.
-2.  The system inspects the `TwinCrew` to determine its required inputs (e.g., `topic`, `question`).
+2.  The system inspects the `TwinCrew` to determine its required inputs (e.g., `startup_idea`).
 3.  A dynamic tool schema is created for the `TwinCrew` function.
 4.  The user interacts with the Chat Manager.
 5.  If the user's request requires the `TwinCrew`, the manager will ask for confirmation.

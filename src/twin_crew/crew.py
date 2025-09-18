@@ -24,49 +24,47 @@ class TwinCrew:
         )
 
     @agent
-    def synthesizer(self) -> Agent:
-        return Agent(config=self.agents_config["synthesizer"], verbose=True)
+    def pitch_strategist(self) -> Agent:
+        return Agent(config=self.agents_config["pitch_strategist"], verbose=True)
 
     @agent
-    def newsletter_writer(self) -> Agent:
+    def pitch_writer(self) -> Agent:
         return Agent(
-            config=self.agents_config["newsletter_writer"],
+            config=self.agents_config["pitch_writer"],
             tools=[WordCounterTool()],
             verbose=True,
         )
 
     @agent
-    def newsletter_editor(self) -> Agent:
+    def pitch_refiner(self) -> Agent:
         return Agent(
-            config=self.agents_config["newsletter_editor"],
+            config=self.agents_config["pitch_refiner"],
             tools=[WordCounterTool()],
             verbose=True,
         )
 
     @task
-    def generate_outline_task(self) -> Task:
+    def develop_pitch_outline_task(self) -> Task:
         return Task(
-            config=self.tasks_config["generate_outline_task"],
+            config=self.tasks_config["develop_pitch_outline_task"],
         )
 
     @task
-    def write_newsletter_task(self) -> Task:
+    def write_pitch_draft_task(self) -> Task:
         return Task(
-            config=self.tasks_config["write_newsletter_task"],
-            output_file="newsletter_draft.md",
+            config=self.tasks_config["write_pitch_draft_task"],
         )
 
     @task
-    def review_newsletter_task(self) -> Task:
+    def refine_pitch_for_fit_task(self) -> Task:
         return Task(
-            config=self.tasks_config["review_newsletter_task"],
-            output_file="final_newsletter.md",
+            config=self.tasks_config["refine_pitch_for_fit_task"],
         )
 
     @crew
     def crew(self) -> Crew:
         """Creates the Twin crew"""
-        worker_agents: list[Agent] = [self.synthesizer(), self.newsletter_writer(), self.newsletter_editor()]
+        worker_agents: list[Agent] = [self.pitch_strategist(), self.pitch_writer(), self.pitch_refiner()]
 
         return Crew(
             agents=worker_agents,

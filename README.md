@@ -95,7 +95,16 @@ uv pip freeze > requirements.txt
 
 **Note**: Always run `uv pip freeze > requirements.txt` after adding new dependencies via `uv` to keep the requirements.txt file synchronized with your current environment.
 
-### 3. Configuration
+### 3. Development Setup (Pre-commit Hooks)
+
+This project uses pre-commit hooks to ensure code quality and consistency. After cloning and setting up the project, install the pre-commit hooks:
+
+```bash
+# Install pre-commit hooks
+uv run pre-commit install
+```
+
+### 4. Configuration
 The agent's persona and the crew's tasks are configured via YAML files.
 
 -   **Agent Persona**: Modify `src/twin_crew/config/agents.yaml` to define the Chat Manager's name, role, backstory, and goals.
@@ -106,7 +115,7 @@ You will also need to set your OpenAI API key as an environment variable:
 export OPENAI_API_KEY="your_key_here"
 ```
 
-### 3. Running the Chat
+### 5. Running the Chat
 The project uses `pyproject.toml` to define convenient scripts. To start the chat interface, run:
 
 ```bash

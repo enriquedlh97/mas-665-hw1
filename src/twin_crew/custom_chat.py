@@ -258,7 +258,7 @@ def handle_user_input(
         available_functions=available_functions,
     )
 
-    # If a tool was just called (tool wrapper appends a state note), ask the model to write an acknowledgement message
+    # If a tool was just called (tool wrapper appends a state note), present the crew output via a system-instructed formatter
     if (
         messages
         and messages[-1].get("role") == "system"
@@ -266,16 +266,26 @@ def handle_user_input(
         and messages[-1]["content"].startswith("[state] Crew ")
         and "was called successfully" in messages[-1]["content"]
     ):
-        acknowledgement_prompt = (
-            "Write a single-sentence acknowledgement that you just received the crew's output "
-            "and that the next message will be the result from the crew. Do not include the result itself."
+        crew_output = final_response
+
+        presenter_system_message = (
+            "You just received the crew's final output. This is an internal system message and the user will not see it. "
+            "Craft a message for the user that presents the crew's output. Keep the output of the crew exactly as is."
         )
-        acknowledgement_response = chat_llm.call(
-            messages=messages + [{"role": "user", "content": acknowledgement_prompt}]
+
+        formatted_response = chat_llm.call(
+            messages=messages
+            + [
+                {
+                    "role": "system",
+                    "content": f"{presenter_system_message}\n\n[crew_output]\n{crew_output}",
+                }
+            ]
         )
-        messages.append({"role": "assistant", "content": acknowledgement_response})
-        click.secho(f"\n{speaker_label}: {acknowledgement_response}\n", fg="green")
-        messages.append({"role": "system", "content": ""})
+
+        messages.append({"role": "assistant", "content": formatted_response})
+        click.secho(f"\n{speaker_label}: {formatted_response}\n", fg="green")
+        return
 
     messages.append({"role": "assistant", "content": final_response})
     click.secho(f"\n{speaker_label}: {final_response}\n", fg="green")

@@ -47,6 +47,7 @@ write_pitch_draft_task:
     Flesh out each section of the outline, turning bullet points into compelling paragraphs.
     Ensure the "Why Us?" section is particularly strong, making a clear and enthusiastic case for the co-founder partnership.
     The total length should be concise, with a MAXIMUM of 200 words. If the draft exceeds 200 words, you must revise and condense it.
+    You MUST call the Word Counter Tool on the final draft and, if the count exceeds 200, iteratively revise and re-check until the count is ≤ 200 BEFORE returning any output.
 
     **Target Length**: MAXIMUM 200 words (use WordCounterTool to ensure proper length and revise if over limit)
 
@@ -69,9 +70,9 @@ write_pitch_draft_task:
     {enrique_background}
 
   expected_output: >
-    A fully drafted startup pitch in markdown format. The pitch should be well-structured, persuasive,
+    A fully drafted startup pitch in RAW TEXT (no markdown). The pitch should be well-structured, persuasive,
     and ready for review. It must clearly articulate the problem, solution, market, and co-founder fit.
-    Target length: MAXIMUM 200 words.
+    Target length: MAXIMUM 200 words. Do NOT return any draft above 200 words.
   agent: pitch_writer
 
 refine_pitch_for_fit_task:
@@ -101,6 +102,7 @@ refine_pitch_for_fit_task:
     Important:
     - Only respond with the final, polished pitch draft. Do not include any other text, notes, or commentary.
     - Ensure the pitch is MAXIMUM 200 words (use WordCounterTool to verify and revise if over limit).
+    - You MUST call the Word Counter Tool on the final text and, if the count exceeds 200, iteratively revise and re-check until the count is ≤ 200 BEFORE returning the output.
 
     Here is the user's original startup idea:
     {startup_idea}
@@ -109,6 +111,6 @@ refine_pitch_for_fit_task:
     {enrique_background}
 
   expected_output: >
-    A final, polished startup pitch in markdown format. The pitch should be persuasive, strategically sound, and perfectly tailored to appeal to Enrique.
-    Target length: MAXIMUM 200 words.
+    A final, polished startup pitch in RAW TEXT (no markdown). The pitch should be persuasive, strategically sound, and perfectly tailored to appeal to Enrique.
+    Target length: MAXIMUM 200 words. Do NOT return any output above 200 words.
   agent: pitch_refiner

@@ -38,6 +38,16 @@ pitch_strategist:
       - Connect Enrique's current interests (agentic systems, AI infrastructure) to the startup's mission.
       - Show how this opportunity aligns with his MIT AI Studio project vision.
 
+      - **Rule #4: Length Discipline for Prose (If Applicable)**:
+        - If you produce narrative prose intended as a draft, enforce MAXIMUM 200 words:
+          - Call the Word Counter Tool with the RAW TEXT (not JSON).
+          - If the count exceeds 200, revise and re-check iteratively until ≤ 200.
+          - Do NOT return any prose output above 200 words.
+
+      - **Rule #5: Raw Text Output Only**:
+        - Always output RAW TEXT only.
+        - Do NOT use markdown formatting (no headings, bold/italics, lists, links) or code fences.
+
     **Example Execution**:
     - **Input (Raw Startup Idea)**:
       "I want to build a platform that helps small businesses automate their customer support using AI. The idea is to create chatbots that can handle 80% of customer inquiries without human intervention, but I need someone who understands AI systems and can build scalable infrastructure."
@@ -98,6 +108,16 @@ pitch_writer:
       - Write MAXIMUM 200 words - every word must count.
       - If draft exceeds 200 words, revise and condense immediately.
       - Prioritize impact over length - shorter is better.
+
+      - **Rule #5: Hard Length Enforcement (Required)**:
+        - After producing your final draft, CALL the Word Counter Tool with the RAW TEXT (not JSON).
+        - IF the count > 200, you MUST revise the draft and re-run the Word Counter Tool.
+        - REPEAT until the count is ≤ 200. Do NOT return any output above 200 words.
+        - Only return the final version that is ≤ 200 words.
+
+      - **Rule #6: Raw Text Output Only**:
+        - Always output RAW TEXT only.
+        - Do NOT use markdown formatting (no headings, bold/italics, lists, links) or code fences.
 
     **Example Execution**:
     - **Input (Strategic Outline from pitch_strategist)**:
@@ -186,6 +206,16 @@ pitch_refiner:
       - Ensure final pitch is MAXIMUM 200 words.
       - If over limit, aggressively condense and remove non-essential content.
       - Every word must add value - cut ruthlessly.
+
+      - **Rule #6: Hard Length Enforcement (Required)**:
+        - After producing the polished final text, CALL the Word Counter Tool with the RAW TEXT (not JSON).
+        - IF the count > 200, you MUST revise and re-run the Word Counter Tool.
+        - REPEAT until the count is ≤ 200. Do NOT return any output above 200 words.
+        - Only return the final version that is ≤ 200 words.
+
+      - **Rule #7: Raw Text Output Only**:
+        - Always output RAW TEXT only.
+        - Do NOT use markdown formatting (no headings, bold/italics, lists, links) or code fences.
 
     **Example Execution**:
     - **Input (Draft Pitch from pitch_writer)**:
@@ -328,3 +358,7 @@ chat_manager:
     technical co-founders excited about joining a startup.
 
     Let's create some amazing startup pitches together!
+
+    **Output Format**
+    - Always output RAW TEXT only.
+    - Do NOT use markdown formatting (no headings, bold/italics, lists, links) or code fences.

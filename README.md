@@ -52,26 +52,28 @@ The system is designed to be a proactive and strategic partner in developing a c
 
 ## 🚀 Quick Start
 
-This project no longer uses Docker or Makefiles. It is now a standard Python project managed with `hatch` and `uv` (or `pip`).
+This project uses `uv` for dependency management and Python environment handling.
 
 ### 1. Prerequisites
-- Python 3.11+
-- An OpenAI API key
+- **uv**: Install from [https://docs.astral.sh/uv/getting-started/installation/#standalone-installer](https://docs.astral.sh/uv/getting-started/installation/#standalone-installer)
+- **Python 3.12.0**: Tested with Python 3.12.0
+- **OpenAI API key**: Required for the chat functionality
 
 ### 2. Installation
-Clone the repository and install the dependencies.
+Clone the repository and install the dependencies using `uv`.
 
 ```bash
 git clone <repository-url>
 cd mas-665-hw1
 
-# It is recommended to use a virtual environment
-python -m venv .venv
-source .venv/bin/activate
-
-# Install dependencies
-pip install -e .
+# Install dependencies and create virtual environment
+uv sync
 ```
+
+This will automatically:
+- Create a virtual environment with Python 3.12.0
+- Install all project dependencies
+- Set up the development environment
 
 ### 3. Configuration
 The agent's persona and the crew's tasks are configured via YAML files.
@@ -84,11 +86,16 @@ You will also need to set your OpenAI API key as an environment variable:
 export OPENAI_API_KEY="your_key_here"
 ```
 
-### 4. Running the Chat
+### 3. Running the Chat
 The project uses `pyproject.toml` to define convenient scripts. To start the chat interface, run:
 
 ```bash
 chat
+```
+
+or if for some reason that files, run 
+```
+uv run chat
 ```
 
 This will launch the interactive terminal where you can converse with the agent.
@@ -100,19 +107,62 @@ This will launch the interactive terminal where you can converse with the agent.
     agents.yaml       # Defines the persona of the Chat Manager agent
     tasks.yaml        # Defines the tasks for the worker crew
   tools/
-    # Custom tools for the crew can be added here
+    word_counter_tool.py  # Custom tool for enforcing pitch word limits
   crew.py             # Defines the crew, its agents, and tasks
   custom_chat.py      # The core chat orchestration logic
   main.py             # Entry points for the command-line scripts
   named_agent.py      # A custom Agent class with a typed `name` property
 ```
 
-## Next Steps: Open Questions
+## 📋 Assignment Documentation
 
-The recent refactor has opened up several possibilities for future development:
+### **Assignment Goal: Digital Twin Lite**
+This project fulfills the assignment to "design a simple CrewAI agent that embodies your skills, personality, or interests" by creating Enrique Diaz de Leon Hicks as a digital twin who:
 
--   **Multiple Crew Tools**: Should the chat manager be able to access multiple crews or tools at once?
--   **Output Persistence**: Should we store the results of crew runs in a database or file store for later analysis?
--   **"Run Again" Command**: Should there be a shortcut to re-run the last crew execution without needing a second confirmation?
+- **Embodies Enrique's Skills**: AI/ML expertise, systems engineering, NLP, and production-grade infrastructure
+- **Reflects Enrique's Personality**: Proactive, strategic, collaborative, and focused on agentic systems
+- **Handles Tasks on Enrique's Behalf**: Startup pitch strategy, co-founder evaluation, technical positioning, and market analysis
 
-These questions will be explored in future development cycles.
+
+### **Test Results**
+**What Worked:**
+- ✅ **Persona-Driven Chat**: Enrique's personality and expertise successfully drive conversations
+- ✅ **Dynamic Crew Integration**: Seamless exposure of multi-agent crew as single tool
+- ✅ **Proactive Behavior**: Enrique actively seeks co-founder opportunities and gathers information
+- ✅ **Accurate Word Counting**: Fixed WordCounterTool handles both raw text and escaped JSON inputs
+- ✅ **Clean Output**: Direct chat integration without file dependencies
+
+**What Didn't Work Initially:**
+- ❌ **CrewAI Chat Limitations**: CrewAI doesn't provide a customizable chat interface beyond `crewai chat` - no way to customize the chatting agent behavior for a good chat experience
+- ❌ **Word Count Accuracy**: LLM was passing escaped JSON to WordCounterTool, causing incorrect counts
+- ❌ **Background Visibility**: Enrique was showing his background to users instead of passing it internally
+- ❌ **Repeated Acknowledgements**: System was acknowledging crew calls on every subsequent message
+
+**What We Learned:**
+- **CrewAI Flexibility**: The framework allows for sophisticated multi-agent workflows with clean separation of concerns
+- **Persona Integration**: YAML-based agent configuration enables rich, detailed personas that drive authentic interactions
+- **Tool Integration**: Custom tools (like WordCounterTool) require careful handling of different input formats
+- **Chat Orchestration**: Managing conversation flow with hidden state messages and acknowledgements improves user experience
+
+## 🤖 AI Development Tools Used
+
+### **Cursor AI Assistant**
+This project was developed entirely using Cursor. **All code, including this README, was written via prompting Cursor for changes.**
+
+### **Implementation Approach**
+The `custom_chat.py` implementation was adapted from CrewAI's built-in chat functionality found in [crew_chat.py](https://github.com/crewAIInc/crewAI/blob/main/src/crewai/cli/crew_chat.py). Rather than reinventing the wheel, we:
+
+- **Leveraged Existing Architecture**: Used CrewAI's proven chat interface as foundation
+- **Enhanced with Persona Support**: Added ability to customize manager agent with detailed persona
+- **Maintained Compatibility**: Preserved CrewAI's core functionality while adding customization
+- **Improved User Experience**: Enhanced conversation flow with acknowledgements and state management
+
+## 🔮 Future Extensions
+
+### **Playwright MCP Integration**
+The repository includes a `playwright-mcp` submodule for future iterations that will add MCP (Model Context Protocol) as a tool, enabling web automation capabilities for the agents.
+
+### **Multi-Crew Architecture**
+The custom chat implementation is designed to be extended, allowing agents to access multiple crews as tools rather than being limited to a single crew. This will enable more sophisticated workflows and specialized task delegation.
+
+

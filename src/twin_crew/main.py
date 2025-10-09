@@ -2,6 +2,8 @@
 import sys
 import warnings
 
+import click
+
 from twin_crew.crew import TwinCrew
 from twin_crew.custom_chat import run_custom_chat
 from twin_crew.named_agent import NamedAgent
@@ -77,7 +79,9 @@ def test() -> None:
         raise Exception(f"An error occurred while testing the crew: {e}") from e
 
 
-def chat() -> None:
+@click.command()
+@click.option("--audio", is_flag=True, default=False, help="Enable voice mode.")
+def chat(audio: bool) -> None:
     """
     Start interactive chat with Enrique, your AI newsletter strategy assistant.
     """
@@ -86,7 +90,7 @@ def chat() -> None:
         # Get the manager agent
         manager_agent: NamedAgent = crew_instance.chat_manager()
 
-        run_custom_chat(crew_instance.crew(), manager_agent)
+        run_custom_chat(crew_instance.crew(), manager_agent, audio_mode=audio)
 
     except Exception as e:
         raise Exception(f"An error occurred while starting chat: {e}") from e

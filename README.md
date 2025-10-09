@@ -129,6 +129,40 @@ uv run chat
 
 This will launch the interactive terminal where you can converse with the agent.
 
+### 6. Audio Mode (Speech-to-Text + Text-to-Speech)
+
+You can talk to the agent and hear its responses.
+
+Usage:
+
+```bash
+# Text-only (default)
+uv run chat
+
+# Voice-enabled mode
+uv run chat --audio
+```
+
+What happens in audio mode:
+- The assistant speaks the greeting immediately, then prints it.
+- You will see: "Press Enter to start recording, and Enter again to stop."
+- Speak after pressing Enter; press Enter again to stop recording.
+- The system transcribes your speech, shows it as:
+  - `🎤 You: <transcribed text>`
+- The assistant speaks the reply and also prints it as:
+  - `🔊 Enrique: <assistant text>`
+
+Playback speed:
+- Audio responses are played slightly faster by default to reduce latency.
+- This uses `ffmpeg`'s atempo filter when available; otherwise playback is normal speed.
+- Optional dependency: `ffmpeg` (recommended for speed-up). On macOS: `brew install ffmpeg`.
+
+Troubleshooting audio:
+- macOS: audio playback uses the native `afplay` command. If you still see an AppKit error, ensure Homebrew is installed and test `afplay` with a local file.
+- If TTS audio is generated but not heard, verify your system volume and output device.
+- If recording fails, macOS might need microphone permissions for your terminal app.
+- If transcription seems off, try speaking closer to the mic or reducing background noise.
+
 ## 🏗️ Project Structure
 ```
 /src/twin_crew/

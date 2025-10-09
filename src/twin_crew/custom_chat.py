@@ -13,11 +13,14 @@ from crewai.llm import LLM
 from crewai.types.crew_chat import ChatInputField, ChatInputs
 from crewai.utilities.llm_utils import create_llm
 
+from twin_crew.audio_utils import record_audio, speak_text, transcribe_audio
 from twin_crew.named_agent import NamedAgent
 
 
 def run_custom_chat(
-    crew_instance: Crew, manager_agent: NamedAgent | None = None
+    crew_instance: Crew,
+    manager_agent: NamedAgent | None = None,
+    audio_mode: bool = False,
 ) -> None:
     """
     Generic interactive chat that mirrors crewAI's chat behavior while
@@ -48,7 +51,15 @@ def run_custom_chat(
 
     # Announce intro in persona voice if available
     speaker_label: str = get_agent_display_name(manager_agent)
-    click.secho(f"\n{speaker_label}: {introductory_message}\n", fg="green")
+    if audio_mode:
+        # Speak first, then show text for clarity (speed up slightly for snappier UX)
+        try:
+            speak_text(introductory_message, playback_speed=1.8)
+        except Exception as e:
+            click.secho(f"Failed to play greeting audio: {e}", fg="yellow")
+        click.secho(f"\n{speaker_label}: {introductory_message}\n", fg="green")
+    else:
+        click.secho(f"\n{speaker_label}: {introductory_message}\n", fg="green")
 
     messages: list[dict[str, str]] = [
         {"role": "system", "content": system_message},
@@ -59,6 +70,12 @@ def run_custom_chat(
     available_functions: dict[str, Any] = {
         chat_inputs.crew_name: create_tool_function(crew_instance, messages),
     }
+
+    if audio_mode:
+        audio_chat_loop(
+            chat_llm, messages, tool_schema, available_functions, speaker_label
+        )
+        return
 
     chat_loop(chat_llm, messages, tool_schema, available_functions, speaker_label)
 
@@ -237,7 +254,8 @@ def handle_user_input(
     crew_tool_schema: dict[str, Any],
     available_functions: dict[str, Any],
     speaker_label: str,
-) -> None:
+    suppress_print: bool = False,
+) -> str | None:
     """Handle user input and generate assistant response."""
     if user_input.strip().lower() == "exit":
         click.echo("Exiting chat. Goodbye!")
@@ -249,8 +267,9 @@ def handle_user_input(
 
     messages.append({"role": "user", "content": user_input})
 
-    click.echo()
-    click.secho(f"{speaker_label} is thinking... 🤔", fg="cyan")
+    if not suppress_print:
+        click.echo()
+        click.secho(f"{speaker_label} is thinking... 🤔", fg="cyan")
 
     final_response = chat_llm.call(
         messages=messages,
@@ -284,11 +303,68 @@ def handle_user_input(
         )
 
         messages.append({"role": "assistant", "content": formatted_response})
-        click.secho(f"\n{speaker_label}: {formatted_response}\n", fg="green")
-        return
+        if not suppress_print:
+            click.secho(f"\n{speaker_label}: {formatted_response}\n", fg="green")
+        return formatted_response
 
     messages.append({"role": "assistant", "content": final_response})
-    click.secho(f"\n{speaker_label}: {final_response}\n", fg="green")
+    if not suppress_print:
+        click.secho(f"\n{speaker_label}: {final_response}\n", fg="green")
+    return final_response
+
+
+def audio_chat_loop(
+    chat_llm: LLM,
+    messages: list[dict[str, str]],
+    crew_tool_schema: dict[str, Any],
+    available_functions: dict[str, Any],
+    speaker_label: str,
+) -> None:
+    """Audio-first chat loop: record speech, transcribe, run model, speak reply, print text."""
+    from tempfile import NamedTemporaryFile
+
+    while True:
+        try:
+            with NamedTemporaryFile(
+                prefix="twin_crew_input_", suffix=".wav", delete=True
+            ) as tmp_wav:
+                user_audio_path = tmp_wav.name
+                record_audio(user_audio_path)
+                click.secho("Processing your speech...", fg="white")
+                transcribed_text = transcribe_audio(user_audio_path).strip()
+
+            if not transcribed_text or transcribed_text.lower() == "exit":
+                click.echo("Exiting chat. Goodbye!")
+                break
+
+            # Log user's transcribed speech for visual clarity
+            click.secho(f"\n🎤 You: {transcribed_text}\n", fg="blue")
+
+            assistant_text = (
+                handle_user_input(
+                    transcribed_text,
+                    chat_llm,
+                    messages,
+                    crew_tool_schema,
+                    available_functions,
+                    speaker_label,
+                    suppress_print=True,
+                )
+                or ""
+            )
+
+            if assistant_text:
+                try:
+                    speak_text(assistant_text, playback_speed=1.2)
+                finally:
+                    click.secho(f"\n🔊 {speaker_label}: {assistant_text}\n", fg="green")
+
+        except KeyboardInterrupt:
+            click.echo("\nExiting chat. Goodbye!")
+            break
+        except Exception as e:
+            click.secho(f"An error occurred: {e}", fg="red")
+            break
 
 
 def flush_input() -> None:

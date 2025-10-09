@@ -11,8 +11,11 @@ requires-python = ">=3.11"
 dependencies = [
     "crewai==0.100.0",
     "langchain-openai>=0.3.33",
+    "playsound==1.2.2",
     "pydantic-settings>=2.10.1",
     "pytz>=2025.2",
+    "scipy>=1.16.2",
+    "sounddevice>=0.5.2",
 ]
 
 [project.scripts]
